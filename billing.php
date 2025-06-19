@@ -131,17 +131,13 @@ $transports_result = mysqli_query($conn, $transports_query);
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Material</label>
-                        <select name="material[]" id="material" class="form-select" multiple="multiple" required>
+                        <select name="material[]" id="material" class="form-select" multiple="multiple">
                             <?php while($row = mysqli_fetch_assoc($materials_result)): ?>
                                 <option value="<?php echo $row['id']; ?>" data-price="<?php echo $row['price']; ?>" data-hsn="<?php echo $row['hsn_code']; ?>">
                                     <?php echo $row['name']; ?> (HSN: <?php echo $row['hsn_code']; ?>)
                                 </option>
                             <?php endwhile; ?>
                         </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label>Quantity</label>
-                        <input type="number" name="quantity_dummy" id="quantity_dummy" class="form-control" required min="1" style="display: none;">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label>Total Price</label>

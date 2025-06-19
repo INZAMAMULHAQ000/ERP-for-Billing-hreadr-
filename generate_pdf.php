@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL); // Display all errors for debugging
+ini_set('display_errors', 1); // Make sure errors are displayed
+
 session_start();
 require_once "config/database.php";
 require_once 'vendor/autoload.php';
@@ -10,19 +13,30 @@ if(!isset($_SESSION['loggedin'])) {
     exit;
 }
 
-// Fetch material details
-$material_id = $_POST['material'];
-$material_query = "SELECT name, hsn_code FROM materials WHERE id = '$material_id'";
-$material_result = mysqli_query($conn, $material_query);
-$material = mysqli_fetch_assoc($material_result);
+// Validate required POST data
+if (!isset($_POST['transport']) || empty($_POST['transport'])) {
+    die("Error: Mode of Transport is required.");
+}
+
+if (!isset($_POST['selected_materials_data']) || empty($_POST['selected_materials_data'])) {
+    die("Error: No materials selected.");
+}
+
+$selected_materials_data = json_decode($_POST['selected_materials_data'], true);
+
+if (json_last_error() !== JSON_ERROR_NONE) {
+    die("Error: Invalid material data provided.");
+}
+
+if (empty($selected_materials_data)) {
+    die("Error: No materials selected for billing.");
+}
 
 // Fetch transport details
 $transport_id = $_POST['transport'];
 $transport_query = "SELECT name FROM transports WHERE id = '$transport_id'";
 $transport_result = mysqli_query($conn, $transport_query);
 $transport = mysqli_fetch_assoc($transport_result);
-
-$selected_materials_data = json_decode($_POST['selected_materials_data'], true);
 
 $total_price_before_gst = 0;
 $html_material_rows = '';
