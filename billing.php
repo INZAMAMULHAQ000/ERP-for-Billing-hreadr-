@@ -134,8 +134,8 @@ $transports_result = mysqli_query($conn, $transports_query);
                         <select name="material" id="material" class="form-select" required>
                             <option value="">Select Material</option>
                             <?php while($row = mysqli_fetch_assoc($materials_result)): ?>
-                                <option value="<?php echo $row['id']; ?>" data-price="<?php echo $row['price']; ?>">
-                                    <?php echo $row['name']; ?>
+                                <option value="<?php echo $row['id']; ?>" data-price="<?php echo $row['price']; ?>" data-hsn="<?php echo $row['hsn_code']; ?>">
+                                    <?php echo $row['name']; ?> (HSN: <?php echo $row['hsn_code']; ?>)
                                 </option>
                             <?php endwhile; ?>
                         </select>

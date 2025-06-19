@@ -12,7 +12,7 @@ if(!isset($_SESSION['loggedin'])) {
 
 // Fetch material details
 $material_id = $_POST['material'];
-$material_query = "SELECT name FROM materials WHERE id = '$material_id'";
+$material_query = "SELECT name, hsn_code FROM materials WHERE id = '$material_id'";
 $material_result = mysqli_query($conn, $material_query);
 $material = mysqli_fetch_assoc($material_result);
 
@@ -129,7 +129,7 @@ $html = '
                 <td><strong>Date:</strong> '.$_POST['date'].'</td>
             </tr>
             <tr>
-                <td><strong>GSTIN:</strong> '.$_POST['gstin'].'</td>
+                <td><strong>PARTYS GSTIN:</strong> '.$_POST['gstin'].'</td>
                 <td><strong>State:</strong> N/A</td>
             </tr>
             <tr>
@@ -149,6 +149,7 @@ $html = '
             <tr>
                 <th>#</th>
                 <th>Material</th>
+                <th>HSN Code</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>CGST</th>
@@ -162,6 +163,7 @@ $html = '
             <tr>
                 <td>1</td>
                 <td>'.$material['name'].'</td>
+                <td>'.$material['hsn_code'].'</td>
                 <td>'.$quantity.'</td>
                 <td>₹'.number_format($price, 2).'</td>
                 <td>₹'.number_format($cgst_amount, 2).'</td>

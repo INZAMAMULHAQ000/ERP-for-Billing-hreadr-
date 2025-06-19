@@ -13,15 +13,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'add') {
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $price = floatval($_POST['price']);
-        $sql = "INSERT INTO materials (name, price) VALUES ('$name', $price)";
-        $response['success'] = mysqli_query($conn, $sql);
-        $response['id'] = mysqli_insert_id($conn);
+        $hsn_code = mysqli_real_escape_string($conn, $_POST['hsn_code']);
+        // Check uniqueness
+        $check = mysqli_query($conn, "SELECT id FROM materials WHERE hsn_code='$hsn_code'");
+        if (mysqli_num_rows($check) > 0) {
+            $response['success'] = false;
+            $response['error'] = 'HSN code must be unique.';
+        } else {
+            $sql = "INSERT INTO materials (name, price, hsn_code) VALUES ('$name', $price, '$hsn_code')";
+            $response['success'] = mysqli_query($conn, $sql);
+            $response['id'] = mysqli_insert_id($conn);
+        }
     } elseif ($_POST['action'] === 'update') {
         $id = intval($_POST['id']);
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $price = floatval($_POST['price']);
-        $sql = "UPDATE materials SET name='$name', price=$price WHERE id=$id";
-        $response['success'] = mysqli_query($conn, $sql);
+        $hsn_code = mysqli_real_escape_string($conn, $_POST['hsn_code']);
+        // Check uniqueness for update
+        $check = mysqli_query($conn, "SELECT id FROM materials WHERE hsn_code='$hsn_code' AND id!=$id");
+        if (mysqli_num_rows($check) > 0) {
+            $response['success'] = false;
+            $response['error'] = 'HSN code must be unique.';
+        } else {
+            $sql = "UPDATE materials SET name='$name', price=$price, hsn_code='$hsn_code' WHERE id=$id";
+            $response['success'] = mysqli_query($conn, $sql);
+        }
     } elseif ($_POST['action'] === 'delete') {
         $id = intval($_POST['id']);
         $sql = "DELETE FROM materials WHERE id=$id";
@@ -122,11 +138,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <div class="materials-form mb-4">
             <h2 class="text-center mb-4 neon-text">Manage Materials</h2>
             <form id="addMaterialForm" class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <input type="text" class="form-control" id="materialName" placeholder="Material Name" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <input type="number" class="form-control" id="materialPrice" placeholder="Price" min="0" step="0.01" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" id="materialHSN" placeholder="HSN Code" maxlength="20" required>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-neon w-100">Add</button>
@@ -140,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <tr>
                         <th>Name</th>
                         <th>Price</th>
+                        <th>HSN Code</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -159,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         rows += `<tr data-id="${mat.id}">
                             <td><span class="mat-name">${mat.name}</span></td>
                             <td><span class="mat-price">${parseFloat(mat.price).toFixed(2)}</span></td>
+                            <td><span class="mat-hsn">${mat.hsn_code}</span></td>
                             <td>
                                 <button class="btn btn-sm btn-neon edit-btn">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-btn">Delete</button>
@@ -177,11 +198,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 e.preventDefault();
                 const name = $('#materialName').val().trim();
                 const price = $('#materialPrice').val();
-                if(name && price) {
-                    $.post('materials.php', {action: 'add', name, price}, function(data) {
+                const hsn_code = $('#materialHSN').val().trim();
+                if(name && price && hsn_code) {
+                    $.post('materials.php', {action: 'add', name, price, hsn_code}, function(data) {
                         if(data.success) {
                             fetchMaterials();
                             $('#addMaterialForm')[0].reset();
+                        } else if(data.error) {
+                            alert(data.error);
                         }
                     }, 'json');
                 }
@@ -201,8 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 const id = tr.data('id');
                 const name = tr.find('.mat-name').text();
                 const price = tr.find('.mat-price').text();
+                const hsn = tr.find('.mat-hsn').text();
                 tr.html(`<td><input type='text' class='form-control form-control-sm edit-name' value='${name}'></td>
                          <td><input type='number' class='form-control form-control-sm edit-price' value='${price}' min='0' step='0.01'></td>
+                         <td><input type='text' class='form-control form-control-sm edit-hsn' value='${hsn}' maxlength='20'></td>
                          <td>
                             <button class='btn btn-sm btn-success save-btn'>Save</button>
                             <button class='btn btn-sm btn-secondary cancel-btn'>Cancel</button>
@@ -218,9 +244,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 const id = tr.data('id');
                 const name = tr.find('.edit-name').val().trim();
                 const price = tr.find('.edit-price').val();
-                if(name && price) {
-                    $.post('materials.php', {action: 'update', id, name, price}, function(data) {
+                const hsn_code = tr.find('.edit-hsn').val().trim();
+                if(name && price && hsn_code) {
+                    $.post('materials.php', {action: 'update', id, name, price, hsn_code}, function(data) {
                         if(data.success) fetchMaterials();
+                        else if(data.error) alert(data.error);
                     }, 'json');
                 }
             });
