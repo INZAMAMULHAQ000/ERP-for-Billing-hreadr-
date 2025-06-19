@@ -14,4 +14,17 @@ CREATE TABLE IF NOT EXISTS materials (
 INSERT INTO materials (name, price) VALUES
 ('Sample Material 1', 100.00),
 ('Sample Material 2', 150.00),
-('Sample Material 3', 200.00); 
+('Sample Material 3', 200.00);
+
+-- Create transports table
+CREATE TABLE IF NOT EXISTS transports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert some sample transport modes
+INSERT INTO transports (name) VALUES
+('Truck'),
+('Van'),
+('Bike'); 

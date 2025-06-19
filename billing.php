@@ -10,6 +10,10 @@ if(!isset($_SESSION['loggedin'])) {
 // Fetch materials for dropdown
 $materials_query = "SELECT * FROM materials ORDER BY name";
 $materials_result = mysqli_query($conn, $materials_query);
+
+// Fetch transports for dropdown
+$transports_query = "SELECT * FROM transports ORDER BY name";
+$transports_result = mysqli_query($conn, $transports_query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -80,6 +84,7 @@ $materials_result = mysqli_query($conn, $materials_query);
             <a class="navbar-brand neon-text" href="#">Billing System</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
+                <a class="nav-link" href="transport.php">Manage Transport</a>
                 <a class="nav-link" href="logout.php">Logout</a>
             </div>
         </div>
@@ -152,6 +157,18 @@ $materials_result = mysqli_query($conn, $materials_query);
                     <div class="col-md-4 mb-3">
                         <label>GST Rate (%)</label>
                         <input type="number" name="gst_rate" class="form-control" value="18" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Mode of Transport</label>
+                        <select name="transport" id="transport" class="form-select" required>
+                            <option value="">Select Mode of Transport</option>
+                            <?php while($trow = mysqli_fetch_assoc($transports_result)): ?>
+                                <option value="<?php echo $trow['id']; ?>"><?php echo $trow['name']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
                     </div>
                 </div>
 

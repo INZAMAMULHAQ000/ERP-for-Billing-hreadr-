@@ -16,6 +16,12 @@ $material_query = "SELECT name FROM materials WHERE id = '$material_id'";
 $material_result = mysqli_query($conn, $material_query);
 $material = mysqli_fetch_assoc($material_result);
 
+// Fetch transport details
+$transport_id = $_POST['transport'];
+$transport_query = "SELECT name FROM transports WHERE id = '$transport_id'";
+$transport_result = mysqli_query($conn, $transport_query);
+$transport = mysqli_fetch_assoc($transport_result);
+
 $quantity = $_POST['quantity'];
 $price = $_POST['price'];
 $gst_rate = $_POST['gst_rate'];
@@ -116,6 +122,9 @@ $html = '
             </tr>
             <tr>
                 <td colspan="2"><strong>State:</strong> '.$_POST['state'].'</td>
+            </tr>
+            <tr>
+                <td colspan="2"><strong>Mode of Transport:</strong> '.($transport ? $transport['name'] : '').'</td>
             </tr>
         </table>
     </div>
