@@ -7,16 +7,38 @@ if(!isset($_SESSION['loggedin'])) {
     exit;
 }
 
-if(isset($_POST['add_material'])) {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $price = mysqli_real_escape_string($conn, $_POST['price']);
-    
-    $sql = "INSERT INTO materials (name, price) VALUES ('$name', '$price')";
-    mysqli_query($conn, $sql);
+// Handle AJAX requests for CRUD operations
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $response = ['success' => false];
+    if ($_POST['action'] === 'add') {
+        $name = mysqli_real_escape_string($conn, $_POST['name']);
+        $price = floatval($_POST['price']);
+        $sql = "INSERT INTO materials (name, price) VALUES ('$name', $price)";
+        $response['success'] = mysqli_query($conn, $sql);
+        $response['id'] = mysqli_insert_id($conn);
+    } elseif ($_POST['action'] === 'update') {
+        $id = intval($_POST['id']);
+        $name = mysqli_real_escape_string($conn, $_POST['name']);
+        $price = floatval($_POST['price']);
+        $sql = "UPDATE materials SET name='$name', price=$price WHERE id=$id";
+        $response['success'] = mysqli_query($conn, $sql);
+    } elseif ($_POST['action'] === 'delete') {
+        $id = intval($_POST['id']);
+        $sql = "DELETE FROM materials WHERE id=$id";
+        $response['success'] = mysqli_query($conn, $sql);
+    } elseif ($_POST['action'] === 'fetch') {
+        $materials = [];
+        $result = mysqli_query($conn, "SELECT * FROM materials ORDER BY name");
+        while ($row = mysqli_fetch_assoc($result)) {
+            $materials[] = $row;
+        }
+        $response['success'] = true;
+        $response['materials'] = $materials;
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
 }
-
-$materials_query = "SELECT * FROM materials ORDER BY name";
-$materials_result = mysqli_query($conn, $materials_query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +56,7 @@ $materials_result = mysqli_query($conn, $materials_query);
         .container {
             padding: 2rem;
         }
-        .materials-container {
+        .materials-form, .materials-table {
             background: rgba(255, 255, 255, 0.1);
             padding: 2rem;
             border-radius: 10px;
@@ -81,65 +103,128 @@ $materials_result = mysqli_query($conn, $materials_query);
         .table {
             color: #fff;
         }
-        .table thead th {
-            border-color: #0ff;
-        }
-        .table td {
-            border-color: rgba(0, 255, 255, 0.2);
+        .table th, .table td {
+            background: rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand neon-text" href="#">Billing System</a>
+            <a class="navbar-brand neon-text" href="billing.php">Billing System</a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="billing.php">Generate Bill</a>
+                <a class="nav-link" href="billing.php">Back to Billing</a>
                 <a class="nav-link" href="logout.php">Logout</a>
             </div>
         </div>
     </nav>
-
     <div class="container">
-        <div class="materials-container">
+        <div class="materials-form mb-4">
             <h2 class="text-center mb-4 neon-text">Manage Materials</h2>
-            
-            <form method="post" class="mb-4">
-                <div class="row">
-                    <div class="col-md-5">
-                        <input type="text" name="name" class="form-control" placeholder="Material Name" required>
-                    </div>
-                    <div class="col-md-5">
-                        <input type="number" name="price" class="form-control" placeholder="Price" step="0.01" required>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" name="add_material" class="btn btn-neon w-100">Add</button>
-                    </div>
+            <form id="addMaterialForm" class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="materialName" placeholder="Material Name" required>
+                </div>
+                <div class="col-md-4">
+                    <input type="number" class="form-control" id="materialPrice" placeholder="Price" min="0" step="0.01" required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-neon w-100">Add</button>
                 </div>
             </form>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Material Name</th>
-                            <th>Price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while($row = mysqli_fetch_assoc($materials_result)): ?>
-                            <tr>
-                                <td><?php echo $row['name']; ?></td>
-                                <td>₹<?php echo number_format($row['price'], 2); ?></td>
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
+        </div>
+        <div class="materials-table">
+            <h4 class="mb-3 neon-text">Materials List</h4>
+            <table class="table table-hover" id="materialsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Materials will be loaded here -->
+                </tbody>
+            </table>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function fetchMaterials() {
+            $.post('materials.php', {action: 'fetch'}, function(data) {
+                if(data.success) {
+                    let rows = '';
+                    data.materials.forEach(function(mat) {
+                        rows += `<tr data-id="${mat.id}">
+                            <td><span class="mat-name">${mat.name}</span></td>
+                            <td><span class="mat-price">${parseFloat(mat.price).toFixed(2)}</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-neon edit-btn">Edit</button>
+                                <button class="btn btn-sm btn-danger delete-btn">Delete</button>
+                            </td>
+                        </tr>`;
+                    });
+                    $('#materialsTable tbody').html(rows);
+                }
+            }, 'json');
+        }
+
+        $(document).ready(function() {
+            fetchMaterials();
+
+            $('#addMaterialForm').submit(function(e) {
+                e.preventDefault();
+                const name = $('#materialName').val().trim();
+                const price = $('#materialPrice').val();
+                if(name && price) {
+                    $.post('materials.php', {action: 'add', name, price}, function(data) {
+                        if(data.success) {
+                            fetchMaterials();
+                            $('#addMaterialForm')[0].reset();
+                        }
+                    }, 'json');
+                }
+            });
+
+            $('#materialsTable').on('click', '.delete-btn', function() {
+                if(confirm('Delete this material?')) {
+                    const id = $(this).closest('tr').data('id');
+                    $.post('materials.php', {action: 'delete', id}, function(data) {
+                        if(data.success) fetchMaterials();
+                    }, 'json');
+                }
+            });
+
+            $('#materialsTable').on('click', '.edit-btn', function() {
+                const tr = $(this).closest('tr');
+                const id = tr.data('id');
+                const name = tr.find('.mat-name').text();
+                const price = tr.find('.mat-price').text();
+                tr.html(`<td><input type='text' class='form-control form-control-sm edit-name' value='${name}'></td>
+                         <td><input type='number' class='form-control form-control-sm edit-price' value='${price}' min='0' step='0.01'></td>
+                         <td>
+                            <button class='btn btn-sm btn-success save-btn'>Save</button>
+                            <button class='btn btn-sm btn-secondary cancel-btn'>Cancel</button>
+                         </td>`);
+            });
+
+            $('#materialsTable').on('click', '.cancel-btn', function() {
+                fetchMaterials();
+            });
+
+            $('#materialsTable').on('click', '.save-btn', function() {
+                const tr = $(this).closest('tr');
+                const id = tr.data('id');
+                const name = tr.find('.edit-name').val().trim();
+                const price = tr.find('.edit-price').val();
+                if(name && price) {
+                    $.post('materials.php', {action: 'update', id, name, price}, function(data) {
+                        if(data.success) fetchMaterials();
+                    }, 'json');
+                }
+            });
+        });
+    </script>
 </body>
 </html> 
