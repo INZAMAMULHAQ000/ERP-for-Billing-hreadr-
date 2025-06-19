@@ -131,8 +131,7 @@ $transports_result = mysqli_query($conn, $transports_query);
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Material</label>
-                        <select name="material" id="material" class="form-select" required>
-                            <option value="">Select Material</option>
+                        <select name="material[]" id="material" class="form-select" multiple="multiple" required>
                             <?php while($row = mysqli_fetch_assoc($materials_result)): ?>
                                 <option value="<?php echo $row['id']; ?>" data-price="<?php echo $row['price']; ?>" data-hsn="<?php echo $row['hsn_code']; ?>">
                                     <?php echo $row['name']; ?> (HSN: <?php echo $row['hsn_code']; ?>)
@@ -142,11 +141,35 @@ $transports_result = mysqli_query($conn, $transports_query);
                     </div>
                     <div class="col-md-4 mb-3">
                         <label>Quantity</label>
-                        <input type="number" name="quantity" id="quantity" class="form-control" required min="1">
+                        <input type="number" name="quantity_dummy" id="quantity_dummy" class="form-control" required min="1" style="display: none;">
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label>Price</label>
-                        <input type="number" name="price" id="price" class="form-control" required readonly>
+                        <label>Total Price</label>
+                        <input type="number" name="price" id="price" class="form-control" required readonly value="0">
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label>Selected Materials</label>
+                        <div id="selectedMaterialsTableContainer" style="max-height: 250px; overflow-y: auto;">
+                            <table class="table table-bordered table-sm" id="selectedMaterialsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>HSN</th>
+                                        <th>Price/Unit</th>
+                                        <th>Quantity</th>
+                                        <th>Subtotal</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Selected materials will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <input type="hidden" name="selected_materials_data" id="selectedMaterialsData">
                     </div>
                 </div>
 
@@ -195,16 +218,92 @@ $transports_result = mysqli_query($conn, $transports_query);
         $(document).ready(function() {
             $('#material').select2();
 
-            $('#material').change(function() {
-                const price = $(this).find(':selected').data('price');
-                $('#price').val(price);
+            function calculateGrandTotal() {
+                let grandTotal = 0;
+                $('#selectedMaterialsTable tbody tr').each(function() {
+                    const subtotal = parseFloat($(this).find('.item-subtotal').text());
+                    if (!isNaN(subtotal)) {
+                        grandTotal += subtotal;
+                    }
+                });
+                $('#price').val(grandTotal.toFixed(2));
+            }
+
+            $('#material').on('change', function() {
+                const selectedMaterialIds = $(this).val() || [];
+                const materialsInTable = {};
+                $('#selectedMaterialsTable tbody tr').each(function() {
+                    const id = $(this).data('id');
+                    materialsInTable[id] = $(this);
+                });
+
+                // Remove deselected materials from table
+                for (const id in materialsInTable) {
+                    if (!selectedMaterialIds.includes(id)) {
+                        materialsInTable[id].remove();
+                    }
+                }
+
+                // Add newly selected materials to table
+                selectedMaterialIds.forEach(function(id) {
+                    if (!materialsInTable[id]) {
+                        const option = $('#material option[value="' + id + '"]');
+                        const name = option.text().split('(HSN:')[0].trim();
+                        const hsn = option.data('hsn');
+                        const pricePerUnit = option.data('price');
+
+                        const newRow = `<tr data-id="${id}" data-price-per-unit="${pricePerUnit}">
+                                            <td>${name}</td>
+                                            <td>${hsn}</td>
+                                            <td>${pricePerUnit}</td>
+                                            <td><input type="number" class="form-control form-control-sm item-quantity" value="1" min="1" style="width: 80px;"></td>
+                                            <td class="item-subtotal">${(pricePerUnit * 1).toFixed(2)}</td>
+                                            <td><button type="button" class="btn btn-danger btn-sm remove-item">Remove</button></td>
+                                        </tr>`;
+                        $('#selectedMaterialsTable tbody').append(newRow);
+                    }
+                });
+                updateHiddenDataAndTotal();
             });
 
-            $('#quantity').change(function() {
-                const price = $('#material').find(':selected').data('price');
-                const quantity = $(this).val();
-                $('#price').val(price * quantity);
+            $('#selectedMaterialsTable').on('input', '.item-quantity', function() {
+                const row = $(this).closest('tr');
+                const quantity = parseInt($(this).val()) || 0;
+                const pricePerUnit = parseFloat(row.data('price-per-unit'));
+                const subtotal = quantity * pricePerUnit;
+                row.find('.item-subtotal').text(subtotal.toFixed(2));
+                updateHiddenDataAndTotal();
             });
+
+            $('#selectedMaterialsTable').on('click', '.remove-item', function() {
+                const row = $(this).closest('tr');
+                const materialIdToRemove = row.data('id').toString();
+                
+                // Deselect the item in the select2 dropdown
+                const currentSelected = $('#material').val();
+                const newSelected = currentSelected.filter(id => id !== materialIdToRemove);
+                $('#material').val(newSelected).trigger('change.select2');
+
+                row.remove(); // Remove the row from the table
+                updateHiddenDataAndTotal();
+            });
+
+            function updateHiddenDataAndTotal() {
+                const selectedMaterials = [];
+                $('#selectedMaterialsTable tbody tr').each(function() {
+                    const id = $(this).data('id');
+                    const name = $(this).find('td').eq(0).text().trim();
+                    const hsn_code = $(this).find('td').eq(1).text().trim();
+                    const price_per_unit = parseFloat($(this).data('price-per-unit'));
+                    const quantity = parseInt($(this).find('.item-quantity').val()) || 0;
+                    selectedMaterials.push({ id: id, name: name, hsn_code: hsn_code, price_per_unit: price_per_unit, quantity: quantity });
+                });
+                $('#selectedMaterialsData').val(JSON.stringify(selectedMaterials));
+                calculateGrandTotal();
+            }
+
+            // Initial call to populate table if there are pre-selected items (e.g., on form reload, though not implemented here)
+            updateHiddenDataAndTotal();
         });
     </script>
 </body>

@@ -22,8 +22,34 @@ $transport_query = "SELECT name FROM transports WHERE id = '$transport_id'";
 $transport_result = mysqli_query($conn, $transport_query);
 $transport = mysqli_fetch_assoc($transport_result);
 
-$quantity = $_POST['quantity'];
-$price = $_POST['price'];
+$selected_materials_data = json_decode($_POST['selected_materials_data'], true);
+
+$total_price_before_gst = 0;
+$html_material_rows = '';
+$item_count = 1;
+
+foreach ($selected_materials_data as $item) {
+    $item_id = $item['id'];
+    $item_name = htmlspecialchars($item['name']);
+    $item_hsn_code = htmlspecialchars($item['hsn_code']);
+    $item_price_per_unit = floatval($item['price_per_unit']);
+    $item_quantity = intval($item['quantity']);
+    $item_subtotal = $item_price_per_unit * $item_quantity;
+    $total_price_before_gst += $item_subtotal;
+
+    $html_material_rows .= '
+            <tr>
+                <td>' . $item_count++ . '</td>
+                <td>' . $item_name . '</td>
+                <td>' . $item_hsn_code . '</td>
+                <td>' . $item_quantity . '</td>
+                <td>₹' . number_format($item_price_per_unit, 2) . '</td>
+                <td>₹' . number_format($item_subtotal, 2) . '</td>
+            </tr>';
+}
+
+$price = $total_price_before_gst; // Rename for clarity, this is the total material price before any GST
+
 $cgst_rate = isset($_POST['cgst_rate']) ? floatval($_POST['cgst_rate']) : 0;
 $sgst_rate = isset($_POST['sgst_rate']) ? floatval($_POST['sgst_rate']) : 0;
 $igst_rate = isset($_POST['igst_rate']) ? floatval($_POST['igst_rate']) : 0;
@@ -151,27 +177,12 @@ $html = '
                 <th>Material</th>
                 <th>HSN Code</th>
                 <th>Quantity</th>
-                <th>Price</th>
-                <th>CGST</th>
-                <th>SGST</th>
-                <th>IGST</th>
-                <th>GST</th>
-                <th>Total</th>
+                <th>Price/Unit</th>
+                <th>Subtotal</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>1</td>
-                <td>'.$material['name'].'</td>
-                <td>'.$material['hsn_code'].'</td>
-                <td>'.$quantity.'</td>
-                <td>₹'.number_format($price, 2).'</td>
-                <td>₹'.number_format($cgst_amount, 2).'</td>
-                <td>₹'.number_format($sgst_amount, 2).'</td>
-                <td>₹'.number_format($igst_amount, 2).'</td>
-                <td>₹'.number_format($gst_amount, 2).'</td>
-                <td>₹'.number_format($total, 2).'</td>
-            </tr>
+            ' . $html_material_rows . '
         </tbody>
     </table>
 
