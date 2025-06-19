@@ -151,24 +151,21 @@ $transports_result = mysqli_query($conn, $transports_query);
                 </div>
 
                 <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label>GST Type</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="gst_type" value="sgst_cgst" checked>
-                            <label class="form-check-label">SGST + CGST</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="gst_type" value="igst">
-                            <label class="form-check-label">IGST</label>
-                        </div>
+                    <div class="col-md-3 mb-3">
+                        <label>CGST (%)</label>
+                        <input type="number" name="cgst_rate" class="form-control" value="0" required>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label>State</label>
-                        <input type="text" name="state" class="form-control" value="Karnataka" readonly>
+                    <div class="col-md-3 mb-3">
+                        <label>SGST (%)</label>
+                        <input type="number" name="sgst_rate" class="form-control" value="0" required>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label>GST Rate (%)</label>
-                        <input type="number" name="gst_rate" class="form-control" value="18" required>
+                    <div class="col-md-3 mb-3">
+                        <label>IGST (%)</label>
+                        <input type="number" name="igst_rate" class="form-control" value="0" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label>GST (%)</label>
+                        <input type="number" name="gst_rate" class="form-control" value="0" required>
                     </div>
                 </div>
 

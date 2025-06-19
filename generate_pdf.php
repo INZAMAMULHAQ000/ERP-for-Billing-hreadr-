@@ -24,9 +24,16 @@ $transport = mysqli_fetch_assoc($transport_result);
 
 $quantity = $_POST['quantity'];
 $price = $_POST['price'];
-$gst_rate = $_POST['gst_rate'];
+$cgst_rate = isset($_POST['cgst_rate']) ? floatval($_POST['cgst_rate']) : 0;
+$sgst_rate = isset($_POST['sgst_rate']) ? floatval($_POST['sgst_rate']) : 0;
+$igst_rate = isset($_POST['igst_rate']) ? floatval($_POST['igst_rate']) : 0;
+$gst_rate = isset($_POST['gst_rate']) ? floatval($_POST['gst_rate']) : 0;
+
+$cgst_amount = ($price * $cgst_rate) / 100;
+$sgst_amount = ($price * $sgst_rate) / 100;
+$igst_amount = ($price * $igst_rate) / 100;
 $gst_amount = ($price * $gst_rate) / 100;
-$total = $price + $gst_amount;
+$total = $price + $cgst_amount + $sgst_amount + $igst_amount + $gst_amount;
 
 // New: Read customer address and phone number
 $customer_name = $_POST['customer_name'];
@@ -123,7 +130,7 @@ $html = '
             </tr>
             <tr>
                 <td><strong>GSTIN:</strong> '.$_POST['gstin'].'</td>
-                <td><strong>State:</strong> '.$_POST['state'].'</td>
+                <td><strong>State:</strong> N/A</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Mode of Transport:</strong> '.($transport ? $transport['name'] : '').'</td>
@@ -144,6 +151,9 @@ $html = '
                 <th>Material</th>
                 <th>Quantity</th>
                 <th>Price</th>
+                <th>CGST</th>
+                <th>SGST</th>
+                <th>IGST</th>
                 <th>GST</th>
                 <th>Total</th>
             </tr>
@@ -154,29 +164,22 @@ $html = '
                 <td>'.$material['name'].'</td>
                 <td>'.$quantity.'</td>
                 <td>₹'.number_format($price, 2).'</td>
+                <td>₹'.number_format($cgst_amount, 2).'</td>
+                <td>₹'.number_format($sgst_amount, 2).'</td>
+                <td>₹'.number_format($igst_amount, 2).'</td>
                 <td>₹'.number_format($gst_amount, 2).'</td>
                 <td>₹'.number_format($total, 2).'</td>
             </tr>
         </tbody>
     </table>
 
-    <div class="gst-details">';
-
-if($_POST['gst_type'] == 'sgst_cgst') {
-    $sgst = $gst_amount / 2;
-    $html .= '
+    <div class="gst-details">
         <p style="text-align: right;">
-            <strong>SGST ('.($gst_rate/2).'%):</strong> ₹'.number_format($sgst, 2).'<br>
-            <strong>CGST ('.($gst_rate/2).'%):</strong> ₹'.number_format($sgst, 2).'
-        </p>';
-} else {
-    $html .= '
-        <p style="text-align: right;">
-            <strong>IGST ('.$gst_rate.'%):</strong> ₹'.number_format($gst_amount, 2).'
-        </p>';
-}
-
-$html .= '
+            <strong>CGST ('.$cgst_rate.'%):</strong> ₹'.number_format($cgst_amount, 2).'<br>
+            <strong>SGST ('.$sgst_rate.'%):</strong> ₹'.number_format($sgst_amount, 2).'<br>
+            <strong>IGST ('.$igst_rate.'%):</strong> ₹'.number_format($igst_amount, 2).'<br>
+            <strong>GST ('.$gst_rate.'%):</strong> ₹'.number_format($gst_amount, 2).'
+        </p>
     </div>
 
     <div class="total">
