@@ -28,6 +28,11 @@ $gst_rate = $_POST['gst_rate'];
 $gst_amount = ($price * $gst_rate) / 100;
 $total = $price + $gst_amount;
 
+// New: Read customer address and phone number
+$customer_name = $_POST['customer_name'];
+$customer_address = $_POST['customer_address'];
+$customer_phone = $_POST['customer_phone'];
+
 // Initialize Dompdf
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
@@ -117,16 +122,19 @@ $html = '
                 <td><strong>Date:</strong> '.$_POST['date'].'</td>
             </tr>
             <tr>
-                <td><strong>Customer Name:</strong> '.$_POST['customer_name'].'</td>
                 <td><strong>GSTIN:</strong> '.$_POST['gstin'].'</td>
-            </tr>
-            <tr>
-                <td colspan="2"><strong>State:</strong> '.$_POST['state'].'</td>
+                <td><strong>State:</strong> '.$_POST['state'].'</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Mode of Transport:</strong> '.($transport ? $transport['name'] : '').'</td>
             </tr>
         </table>
+    </div>
+
+    <div class="customer-details">
+        <strong>Customer Name:</strong> '.htmlspecialchars($customer_name).'<br>
+        <strong>Address:</strong> '.nl2br(htmlspecialchars($customer_address)).'<br>
+        <strong>Phone No:</strong> '.htmlspecialchars($customer_phone).'
     </div>
 
     <table>

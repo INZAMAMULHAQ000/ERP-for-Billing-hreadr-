@@ -116,6 +116,18 @@ $transports_result = mysqli_query($conn, $transports_query);
                     </div>
                 </div>
 
+                <!-- New fields for address and phone -->
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label>Address</label>
+                        <textarea name="customer_address" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label>Phone No</label>
+                        <input type="text" name="customer_phone" class="form-control" required>
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label>Material</label>
