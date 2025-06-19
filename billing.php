@@ -24,67 +24,113 @@ $transports_result = mysqli_query($conn, $transports_query);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
+        :root {
+            --background-color: #000;
+            --text-color: #fff;
+            --neon-color: #0ff;
+            --form-bg: rgba(255, 255, 255, 0.1);
+            --form-border: #0ff;
+            --form-focus-bg: rgba(255, 255, 255, 0.2);
+            --form-focus-shadow: 0 0 10px var(--neon-color);
+            --btn-text-shadow: 0 0 5px var(--neon-color);
+            --btn-hover-bg: var(--neon-color);
+            --btn-hover-color: #000;
+            --btn-hover-shadow: 0 0 20px var(--neon-color);
+            --table-bg: rgba(0,0,0,0.5);
+            --table-border: #ddd;
+        }
+
+        body.light-theme {
+            --background-color: #f0f2f5;
+            --text-color: #333;
+            --neon-color: #007bff; /* A blue neon for light theme */
+            --form-bg: rgba(255, 255, 255, 0.8);
+            --form-border: #007bff;
+            --form-focus-bg: rgba(255, 255, 255, 0.9);
+            --form-focus-shadow: 0 0 10px var(--neon-color);
+            --btn-text-shadow: none;
+            --btn-hover-bg: var(--neon-color);
+            --btn-hover-color: #fff;
+            --btn-hover-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            --table-bg: rgba(255,255,255,0.9);
+            --table-border: #ccc;
+        }
+
         body {
-            background: #000;
-            color: #fff;
+            background: var(--background-color);
+            color: var(--text-color);
             min-height: 100vh;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         .container {
             padding: 2rem;
         }
         .billing-form {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--form-bg);
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 20px #0ff,
-                        inset 0 0 20px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px var(--neon-color),
+                        inset 0 0 20px rgba(0, 255, 255, 0.5); /* Keep a bit of the original neon feel for the form */
+            transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         .neon-text {
-            color: #fff;
-            text-shadow: 0 0 5px #fff,
-                         0 0 10px #0ff,
-                         0 0 20px #0ff;
+            color: var(--text-color);
+            text-shadow: 0 0 5px var(--text-color),
+                         0 0 10px var(--neon-color),
+                         0 0 20px var(--neon-color);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
         .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid #0ff;
-            color: #fff;
+            background: var(--form-bg);
+            border: 1px solid var(--form-border);
+            color: var(--text-color);
+            transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
         .form-control:focus, .form-select:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #0ff;
-            box-shadow: 0 0 10px #0ff;
-            color: #fff;
+            background: var(--form-focus-bg);
+            border-color: var(--form-border);
+            box-shadow: var(--form-focus-shadow);
+            color: var(--text-color);
         }
         .btn-neon {
             background: transparent;
-            border: 2px solid #0ff;
-            color: #fff;
-            text-shadow: 0 0 5px #0ff;
-            box-shadow: 0 0 10px #0ff;
+            border: 2px solid var(--neon-color);
+            color: var(--text-color);
+            text-shadow: var(--btn-text-shadow);
+            box-shadow: 0 0 10px var(--neon-color);
             transition: all 0.3s ease;
         }
         .btn-neon:hover {
-            background: #0ff;
-            color: #000;
-            box-shadow: 0 0 20px #0ff;
+            background: var(--btn-hover-bg);
+            color: var(--btn-hover-color);
+            box-shadow: var(--btn-hover-shadow);
         }
         .nav-link {
-            color: #0ff;
-            text-shadow: 0 0 5px #0ff;
+            color: var(--neon-color);
+            text-shadow: 0 0 5px var(--neon-color);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
         .nav-link:hover {
-            color: #fff;
+            color: var(--text-color);
+        }
+        .table {
+            color: var(--text-color);
+        }
+        .table th, .table td {
+            background: var(--table-bg);
+            border-color: var(--table-border);
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
     </style>
 </head>
-<body>
+<body class="dark-theme"> <!-- Default to dark theme -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand neon-text" href="#">Billing System</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
                 <a class="nav-link" href="transport.php">Manage Transport</a>
+                <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
                 <a class="nav-link" href="logout.php">Logout</a>
             </div>
         </div>
@@ -173,7 +219,7 @@ $transports_result = mysqli_query($conn, $transports_query);
                     <div class="col-md-3 mb-3">
                         <label>CGST (%)</label>
                         <input type="number" name="cgst_rate" class="form-control" value="0" required>
-                    </div>
+                        </div>
                     <div class="col-md-3 mb-3">
                         <label>SGST (%)</label>
                         <input type="number" name="sgst_rate" class="form-control" value="0" required>
@@ -300,6 +346,26 @@ $transports_result = mysqli_query($conn, $transports_query);
 
             // Initial call to populate table if there are pre-selected items (e.g., on form reload, though not implemented here)
             updateHiddenDataAndTotal();
+
+            // Theme Toggle Logic
+            $('#themeToggle').on('click', function() {
+                $('body').toggleClass('light-theme dark-theme');
+                // Save preference to localStorage
+                if ($('body').hasClass('light-theme')) {
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+
+            // Load theme preference on page load
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                $('body').removeClass('light-theme dark-theme').addClass(savedTheme + '-theme');
+            } else {
+                // Default to dark if no preference saved
+                $('body').addClass('dark-theme');
+            }
         });
     </script>
 </body>

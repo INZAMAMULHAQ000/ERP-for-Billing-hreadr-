@@ -155,11 +155,11 @@ $html = '
     </div>
 
     <div class="company-details">
-        <h3>Your Company Name</h3>
-        <p>Address Line 1<br>
-        City, State - PIN<br>
-        Phone: +91-XXXXXXXXXX<br>
-        Email: company@example.com</p>
+        <h3>SS ENTERPRISES</h3>
+        <p>No : 206, Byraveshwara Badavane, Laggere, 1st Main, 4th Cross,<br>
+        Near Sharada School, Bangalore - 560 058<br>
+        Mob : 9900868607<br>
+        State : Karnataka</p>
     </div>
 
     <div class="invoice-details">
@@ -169,8 +169,8 @@ $html = '
                 <td><strong>Date:</strong> '.$_POST['date'].'</td>
             </tr>
             <tr>
-                <td><strong>PARTYS GSTIN:</strong> '.$_POST['gstin'].'</td>
-                <td><strong>State:</strong> N/A</td>
+                <td><strong>PARTY\'S GSTIN:</strong> '.$_POST['gstin'].'</td>
+                <td><strong>State:</strong> Karnataka</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Mode of Transport:</strong> '.($transport ? $transport['name'] : '').'</td>
@@ -213,18 +213,17 @@ $html = '
         <p>Grand Total: ₹'.number_format($total, 2).'</p>
     </div>
 
-    <div class="terms">
-        <h4>Terms & Conditions:</h4>
+    <div class="terms" style="float: left; width: 50%;">
+        <h4>Terms &amp; Conditions:</h4>
         <ol>
-            <li>Goods once sold will not be taken back.</li>
-            <li>Interest will be charged @24% p.a. if the payment is not made within the stipulated time.</li>
-            <li>Subject to local jurisdiction.</li>
-            <li>E. & O.E.</li>
+            <li>Goods once sold cannot be take back or exchanged.</li>
+            <li>Our responsibility ceases immediately the goods is delivery or handed over to the carrier.</li>
+            <li>Subject to Bangalore Jurisdiction.</li>
         </ol>
     </div>
 
-    <div class="signature">
-        <p>Authorized Signature</p>
+    <div class="signature" style="float: right; width: 45%;">
+        <p>Receiver\'s Signature with Seal</p>
     </div>
 </body>
 </html>';
