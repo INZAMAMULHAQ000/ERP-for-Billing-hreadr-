@@ -118,7 +118,9 @@ $display_total = number_format($total, 2);
 
 // Assign POST values to simpler variables for cleaner HTML embedding
 $invoice_number = $_POST['invoice_number'];
-$invoice_date = $_POST['date'];
+$invoice_date_raw = $_POST['date'];
+// Convert date to Indian standard (DD-MM-YYYY)
+$invoice_date = (new DateTime($invoice_date_raw))->format('d-m-Y');
 $party_gstin = $_POST['gstin'];
 $mode_of_transport = ($transport ? $transport['name'] : '');
 

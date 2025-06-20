@@ -47,35 +47,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --background-color: #000;
-            --text-color: #fff;
-            --neon-color: #0ff;
-            --form-bg: rgba(255, 255, 255, 0.1);
-            --form-border: #0ff;
-            --form-focus-bg: rgba(255, 255, 255, 0.2);
-            --form-focus-shadow: 0 0 10px var(--neon-color);
-            --btn-text-shadow: 0 0 5px var(--neon-color);
-            --btn-hover-bg: var(--neon-color);
-            --btn-hover-color: #000;
-            --btn-hover-shadow: 0 0 20px var(--neon-color);
-            --table-bg: rgba(0,0,0,0.5);
-            --table-border: #ddd;
+            --background-color: #f8f9fa;
+            --text-color: #212529;
+            --accent-color: #007bff; /* Professional blue for light theme */
+            --form-bg: #ffffff;
+            --form-border: #dee2e6;
+            --form-focus-bg: #ffffff;
+            --form-focus-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            --btn-text-shadow: none;
+            --btn-hover-bg: var(--accent-color);
+            --btn-hover-color: #fff;
+            --btn-hover-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            --table-bg: #ffffff;
+            --table-border: #dee2e6;
         }
 
         body.light-theme {
             --background-color: #f0f2f5;
             --text-color: #333;
-            --neon-color: #007bff;
+            --accent-color: #007bff; /* A blue for light theme */
             --form-bg: rgba(255, 255, 255, 0.8);
             --form-border: #007bff;
             --form-focus-bg: rgba(255, 255, 255, 0.9);
-            --form-focus-shadow: 0 0 10px var(--neon-color);
+            --form-focus-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
             --btn-text-shadow: none;
-            --btn-hover-bg: var(--neon-color);
+            --btn-hover-bg: var(--accent-color);
             --btn-hover-color: #fff;
             --btn-hover-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
             --table-bg: rgba(255,255,255,0.9);
             --table-border: #ccc;
+        }
+
+        body.dark-theme {
+            --background-color: #212529; /* Dark gray for the main page background */
+            --text-color: #e2e6ea;
+            --accent-color: #66b3ff; /* Lighter blue for dark theme */
+            --form-bg: #495057;
+            --form-border: #6c757d;
+            --form-focus-bg: #495057;
+            --form-focus-shadow: 0 0 0 0.25rem rgba(102, 179, 255, 0.25);
+            --btn-hover-bg: var(--accent-color);
+            --btn-hover-color: #fff;
+            --btn-hover-shadow: 0 0 0 0.25rem rgba(102, 179, 255, 0.25);
+            --table-bg: #495057;
+            --table-border: #6c757d;
         }
 
         body {
@@ -91,16 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             background: var(--form-bg);
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 20px var(--neon-color),
-                        inset 0 0 20px rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Simplified shadow */
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
-        .neon-text {
+        .main-text {
             color: var(--text-color);
-            text-shadow: 0 0 5px var(--text-color),
-                         0 0 10px var(--neon-color),
-                         0 0 20px var(--neon-color);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+            transition: color 0.3s ease;
         }
         .form-control {
             background: var(--form-bg);
@@ -110,30 +121,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         .form-control:focus {
             background: var(--form-focus-bg);
-            border-color: var(--form-border);
+            border-color: var(--accent-color); /* Use accent color for focus border */
             box-shadow: var(--form-focus-shadow);
             color: var(--text-color);
         }
-        .btn-neon {
-            background: transparent;
-            border: 2px solid var(--neon-color);
-            color: var(--text-color);
-            text-shadow: var(--btn-text-shadow);
-            box-shadow: 0 0 10px var(--neon-color);
+        .btn-accent {
+            background: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            color: #fff; /* White text for accent buttons */
             transition: all 0.3s ease;
         }
-        .btn-neon:hover {
+        .btn-accent:hover {
             background: var(--btn-hover-bg);
             color: var(--btn-hover-color);
             box-shadow: var(--btn-hover-shadow);
         }
         .nav-link {
-            color: var(--neon-color);
-            text-shadow: 0 0 5px var(--neon-color);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
         .nav-link:hover {
-            color: var(--text-color);
+            color: var(--accent-color);
         }
         .table {
             color: var(--text-color);
@@ -143,14 +151,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             border-color: var(--table-border);
             transition: background 0.3s ease, border-color 0.3s ease;
         }
+
+        /* Override Bootstrap's default navbar-dark text color to ensure consistency with our theme */
+        .navbar-dark .navbar-nav .nav-link {
+            color: var(--text-color) !important;
+        }
+
+        .navbar-dark .navbar-brand {
+            color: var(--text-color) !important;
+        }
+
+        .navbar-dark .navbar-toggler-icon {
+            filter: invert(var(--navbar-toggler-invert));
+        }
+
+        body.dark-theme .navbar-toggler-icon {
+            --navbar-toggler-invert: 1;
+        }
+
+        body.light-theme .navbar-toggler-icon {
+            --navbar-toggler-invert: 0;
+        }
+
+        /* Dynamic Bottom-Left Logo Container */
+        #dynamicLogoContainer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 150px; /* Size of the circle */
+            height: 150px; /* Size of the circle */
+            background-color: white; /* White circular background */
+            border-radius: 50%; /* Makes it a circle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.1; /* Initially hidden */
+            transition: opacity 0.5s ease-in-out; /* Smooth fade effect */
+            z-index: 1000; /* Ensure it's on top */
+            pointer-events: none; /* Allows clicks to pass through when hidden */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow for the circle */
+        }
+
+        #dynamicLogoContainer img {
+            max-width: 80%; /* Logo scales within the circle */
+            max-height: 80%; /* Logo scales within the circle */
+            object-fit: contain;
+            border-radius: 50%; /* Ensure logo itself is also circular if desired */
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--form-bg); /* Use a consistent background for navbar */
+            border-bottom: 1px solid var(--form-border);
+        }
+        .navbar-brand,
+        .nav-link {
+            font-family: 'Segoe UI', Roboto, "Helvetica Neue", Arial, sans-serif; /* Stylish font */
+            font-weight: bold; /* Make it bold */
+            color: var(--text-color) !important; /* Ensure visibility */
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
     </style>
 </head>
 <body class="dark-theme">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand neon-text" href="billing.php">Billing System</a>
+            <a class="navbar-brand main-text" href="billing.php">
+                <img src="Sun.jpeg" alt="Company Logo" style="height: 90px; margin-right: 10px; vertical-align: middle;">
+                S S ENTERPRISES
+            </a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="billing.php">Back to Billing</a>
+                <a class="nav-link" href="materials.php">Manage Materials</a>
+                <a class="nav-link" href="transport.php">Manage Transport</a>
+                <a class="nav-link" href="change_password.php">Change Password</a>
                 <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
                 <a class="nav-link" href="logout.php">Logout</a>
             </div>
@@ -158,18 +234,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     </nav>
     <div class="container">
         <div class="transports-form mb-4">
-            <h2 class="text-center mb-4 neon-text">Manage Transport</h2>
+            <h2 class="text-center mb-4 main-text">Manage Transport</h2>
             <form id="addTransportForm" class="row g-3">
                 <div class="col-md-10">
                     <input type="text" class="form-control" id="transportName" placeholder="Mode of Transport" required>
                 </div>
                 <div class="col-md-2">
-                    <button type="submit" class="btn btn-neon w-100">Add</button>
+                    <button type="submit" class="btn btn-success w-100">Add</button>
                 </div>
             </form>
         </div>
         <div class="transports-table">
-            <h4 class="mb-3 neon-text">Transport Modes List</h4>
+            <h4 class="mb-3 main-text">Transport Modes List</h4>
             <table class="table table-hover" id="transportsTable">
                 <thead>
                     <tr>
@@ -183,6 +259,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </table>
         </div>
     </div>
+
+    <div id="dynamicLogoContainer">
+        <img src="logo.png" alt="Company Logo">
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function fetchTransports() {
@@ -193,7 +274,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         rows += `<tr data-id="${tr.id}">
                             <td><span class="tr-name">${tr.name}</span></td>
                             <td>
-                                <button class="btn btn-sm btn-neon edit-btn">Edit</button>
+                                <button class="btn btn-sm btn-info edit-btn">Edit</button>
                                 <button class="btn btn-sm btn-danger delete-btn">Delete</button>
                             </td>
                         </tr>`;
@@ -205,6 +286,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         $(document).ready(function() {
             fetchTransports();
+
+            // Dynamic Logo Logic
+            let idleTimeout;
+            const dynamicLogoContainer = $('#dynamicLogoContainer');
+            const idleTime = 2000; // 2 seconds of inactivity before hiding
+
+            function showLogo() {
+                dynamicLogoContainer.css('opacity', '1');
+                dynamicLogoContainer.css('pointer-events', 'auto');
+                clearTimeout(idleTimeout);
+                idleTimeout = setTimeout(hideLogo, idleTime);
+            }
+
+            function hideLogo() {
+                dynamicLogoContainer.css('opacity', '0');
+                dynamicLogoContainer.css('pointer-events', 'none');
+            }
+
+            $(document).on('mousemove scroll touchstart', function() {
+                showLogo();
+            });
+
+            // Initial hide after page load if no immediate interaction
+            idleTimeout = setTimeout(hideLogo, idleTime);
 
             $('#addTransportForm').submit(function(e) {
                 e.preventDefault();

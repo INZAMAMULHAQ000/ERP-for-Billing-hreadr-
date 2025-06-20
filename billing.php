@@ -38,10 +38,12 @@ $transports_result = mysqli_query($conn, $transports_query);
             --btn-hover-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
             --table-bg: #ffffff;
             --table-border: #dee2e6;
+            --readonly-bg: #e9ecef;
+            --readonly-border: #ced4da;
         }
 
         body.dark-theme {
-            --background-color: #343a40;
+            --background-color:rgb(133, 141, 148); /* Dark gray for the main page background */
             --text-color: #e2e6ea;
             --accent-color: #66b3ff; /* Lighter blue for dark theme */
             --form-bg: #495057;
@@ -53,6 +55,8 @@ $transports_result = mysqli_query($conn, $transports_query);
             --btn-hover-shadow: 0 0 0 0.25rem rgba(102, 179, 255, 0.25);
             --table-bg: #495057;
             --table-border: #6c757d;
+            --readonly-bg: #6c757d;
+            --readonly-border: #868e96;
         }
 
         body {
@@ -90,7 +94,7 @@ $transports_result = mysqli_query($conn, $transports_query);
         .btn-accent {
             background: var(--accent-color);
             border: 1px solid var(--accent-color);
-            color: var(--btn-hover-color);
+            color: var(--text-color);
             transition: all 0.3s ease;
         }
         .btn-accent:hover {
@@ -113,15 +117,148 @@ $transports_result = mysqli_query($conn, $transports_query);
             border-color: var(--table-border);
             transition: background 0.3s ease, border-color 0.3s ease;
         }
+
+        /* Select2 Custom Styles for Professional Theme */
+        .select2-container--default .select2-selection--multiple {
+            background-color: var(--form-bg);
+            border: 1px solid var(--form-border);
+            border-radius: 0.25rem;
+            color: var(--text-color);
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--accent-color);
+            color: #fff;
+            border: 1px solid var(--accent-color);
+            border-radius: 0.2rem;
+            padding: 0 0.5rem;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #fff;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            color: var(--text-color);
+        }
+
+        .select2-container--default .select2-results__option {
+            background-color: var(--form-bg);
+            color: var(--text-color);
+        }
+
+        .select2-container--default .select2-results__option--highlighted {
+            background-color: var(--accent-color) !important;
+            color: #fff !important;
+        }
+
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: var(--form-bg);
+            border: 1px solid var(--form-border);
+            color: var(--text-color);
+        }
+
+        /* Ensure placeholders are visible */
+        .form-control::placeholder {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* Custom styles for readonly inputs */
+        input[readonly].form-control {
+            background-color: var(--readonly-bg);
+            border-color: var(--readonly-border);
+            cursor: default; /* Indicate non-interactiveness */
+        }
+
+        input[readonly].form-control:focus {
+            box-shadow: none; /* Remove focus shadow for readonly fields */
+            border-color: var(--readonly-border); /* Keep border consistent when focused */
+        }
+
+        /* Adjusting select2 placeholder color if needed */
+        .select2-container .select2-selection--single .select2-selection__placeholder,
+        .select2-container .select2-search__field::placeholder {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        /* Override Bootstrap's default navbar-dark text color to ensure consistency with our theme */
+        .navbar-dark .navbar-nav .nav-link {
+            color: var(--text-color) !important;
+        }
+
+        .navbar-dark .navbar-brand {
+            color: var(--text-color) !important;
+        }
+
+        .navbar-dark .navbar-toggler-icon {
+            filter: invert(var(--navbar-toggler-invert));
+        }
+
+        body.dark-theme .navbar-toggler-icon {
+            --navbar-toggler-invert: 1;
+        }
+
+        body.light-theme .navbar-toggler-icon {
+            --navbar-toggler-invert: 0;
+        }
+
+        /* Dynamic Bottom-Left Logo Container */
+        #dynamicLogoContainer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 150px; /* Size of the circle */
+            height: 150px; /* Size of the circle */
+            background-color: white; /* White circular background */
+            border-radius: 50%; /* Makes it a circle */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.1; /* Initially hidden */
+            transition: opacity 0.5s ease-in-out; /* Smooth fade effect */
+            z-index: 1000; /* Ensure it's on top */
+            pointer-events: none; /* Allows clicks to pass through when hidden */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow for the circle */
+        }
+
+        #dynamicLogoContainer img {
+            max-width: 80%; /* Logo scales within the circle */
+            max-height: 80%; /* Logo scales within the circle */
+            object-fit: contain;
+            border-radius: 50%; /* Ensure logo itself is also circular if desired */
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--form-bg); /* Use a consistent background for navbar */
+            border-bottom: 1px solid var(--form-border);
+        }
+        .navbar-brand,
+        .nav-link {
+            font-family: 'Segoe UI', Roboto, "Helvetica Neue", Arial, sans-serif; /* Stylish font */
+            font-weight: bold; /* Make it bold */
+            color: var(--text-color) !important; /* Ensure visibility */
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
     </style>
 </head>
 <body class="dark-theme"> <!-- Default to dark theme -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand main-text" href="#">S S ENTERPRISES</a>
+            <a class="navbar-brand main-text" href="#">
+                <img src="Sun.jpeg" alt="Company Logo" style="height: 90px; margin-right: 10px; vertical-align: middle;">
+                S S ENTERPRISES
+            </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
                 <a class="nav-link" href="transport.php">Manage Transport</a>
+                <a class="nav-link" href="change_password.php">Change Password</a>
                 <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
                 <a class="nav-link" href="logout.php">Logout</a>
             </div>
@@ -210,15 +347,15 @@ $transports_result = mysqli_query($conn, $transports_query);
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <label>CGST (%)</label>
-                        <input type="number" name="cgst_rate" class="form-control" value="0" required>
+                        <input type="number" name="cgst_rate" class="form-control">
                     </div>
                     <div class="col-md-3 mb-3">
                         <label>SGST (%)</label>
-                        <input type="number" name="sgst_rate" class="form-control" value="0" required>
+                        <input type="number" name="sgst_rate" class="form-control">
                     </div>
                     <div class="col-md-3 mb-3">
                         <label>IGST (%)</label>
-                        <input type="number" name="igst_rate" class="form-control" value="0" required>
+                        <input type="number" name="igst_rate" class="form-control">
                     </div>
                 </div>
 
@@ -241,12 +378,43 @@ $transports_result = mysqli_query($conn, $transports_query);
         </div>
     </div>
 
+    <div id="dynamicLogoContainer">
+        <img src="logo.png" alt="Company Logo">
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#material').select2();
+
+            // Dynamic Logo Logic
+            let idleTimeout;
+            const dynamicLogoContainer = $('#dynamicLogoContainer');
+            const idleTime = 2000; // 2 seconds of inactivity before hiding
+
+            function showLogo() {
+                dynamicLogoContainer.css('opacity', '1');
+                dynamicLogoContainer.css('pointer-events', 'auto');
+                clearTimeout(idleTimeout);
+                idleTimeout = setTimeout(hideLogo, idleTime);
+            }
+
+            function hideLogo() {
+                dynamicLogoContainer.css('opacity', '0');
+                dynamicLogoContainer.css('pointer-events', 'none');
+            }
+
+            // Show logo on initial load (optional, or wait for first interaction)
+            // showLogo(); 
+
+            $(document).on('mousemove scroll touchstart', function() {
+                showLogo();
+            });
+
+            // Initial hide after page load if no immediate interaction
+            idleTimeout = setTimeout(hideLogo, idleTime);
 
             function calculateGrandTotal() {
                 let grandTotal = 0;
@@ -354,6 +522,46 @@ $transports_result = mysqli_query($conn, $transports_query);
                 // Default to dark if no preference saved
                 $('body').addClass('dark-theme');
             }
+
+            // --- localStorage for GST fields ---
+
+            // Function to load GST values from localStorage
+            function loadGstValues() {
+                const cgst = localStorage.getItem('cgst_rate');
+                const sgst = localStorage.getItem('sgst_rate');
+                const igst = localStorage.getItem('igst_rate');
+
+                if (cgst !== null) {
+                    $('input[name="cgst_rate"]').val(cgst);
+                }
+                if (sgst !== null) {
+                    $('input[name="sgst_rate"]').val(sgst);
+                }
+                if (igst !== null) {
+                    $('input[name="igst_rate"]').val(igst);
+                }
+            }
+
+            // Function to save GST value to localStorage
+            function saveGstValue(inputElement, key) {
+                localStorage.setItem(key, $(inputElement).val());
+            }
+
+            // Load values on page load
+            loadGstValues();
+
+            // Save values when input changes
+            $('input[name="cgst_rate"]').on('input', function() {
+                saveGstValue(this, 'cgst_rate');
+            });
+
+            $('input[name="sgst_rate"]').on('input', function() {
+                saveGstValue(this, 'sgst_rate');
+            });
+
+            $('input[name="igst_rate"]').on('input', function() {
+                saveGstValue(this, 'igst_rate');
+            });
         });
     </script>
 </body>

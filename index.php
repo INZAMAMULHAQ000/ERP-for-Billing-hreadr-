@@ -3,13 +3,24 @@ session_start();
 require_once "config/database.php";
 
 if(isset($_POST['login'])) {
-    $username = $_POST['username'];
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
-    
-    if($username === "admin" && $password === "admin123") {
-        $_SESSION['loggedin'] = true;
-        header("location: billing.php");
-        exit;
+
+    // Fetch user from database
+    $sql = "SELECT id, password FROM users WHERE username = '$username'";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result && mysqli_num_rows($result) == 1) {
+        $user = mysqli_fetch_assoc($result);
+        // Verify hashed password
+        if (password_verify($password, $user['password'])) {
+            $_SESSION['loggedin'] = true;
+            $_SESSION['username'] = $username; // Store username in session
+            header("location: billing.php");
+            exit;
+        } else {
+            $error = "Invalid username or password";
+        }
     } else {
         $error = "Invalid username or password";
     }
