@@ -8,6 +8,17 @@ require_once 'vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+// Read QR code image and convert to base64
+$qr_code_file = __DIR__ . '/QR.jpeg';
+$qr_code_data = '';
+if (file_exists($qr_code_file)) {
+    $qr_code_type = pathinfo($qr_code_file, PATHINFO_EXTENSION);
+    $qr_code_data = 'data:image/' . $qr_code_type . ';base64,' . base64_encode(file_get_contents($qr_code_file));
+} else {
+    // Optionally, handle the case where the file does not exist (e.g., log error, use a placeholder)
+    error_log("QR code image not found at: " . $qr_code_file);
+}
+
 if(!isset($_SESSION['loggedin'])) {
     header("location: index.php");
     exit;
@@ -106,6 +117,7 @@ $html = '
         }
         .company-details {
             margin-bottom: 30px;
+            position: relative; /* Added for QR code positioning */
         }
         .invoice-details {
             margin-bottom: 20px;
@@ -147,6 +159,12 @@ $html = '
             width: 200px;
             float: right;
         }
+        .qr-code {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin-right: 20px; /* Adjust as needed */
+        }
     </style>
 </head>
 <body>
@@ -160,6 +178,9 @@ $html = '
         Near Sharada School, Bangalore - 560 058<br>
         Mob : 9900868607<br>
         State : Karnataka</p>
+        <div class="qr-code">
+            <img src="' . $qr_code_data . '" alt="QR Code" style="width: 100px; height: 100px;">
+        </div>
     </div>
 
     <div class="invoice-details">
