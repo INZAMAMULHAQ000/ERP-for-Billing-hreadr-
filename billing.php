@@ -25,35 +25,34 @@ $transports_result = mysqli_query($conn, $transports_query);
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         :root {
-            --background-color: #000;
-            --text-color: #fff;
-            --neon-color: #0ff;
-            --form-bg: rgba(255, 255, 255, 0.1);
-            --form-border: #0ff;
-            --form-focus-bg: rgba(255, 255, 255, 0.2);
-            --form-focus-shadow: 0 0 10px var(--neon-color);
-            --btn-text-shadow: 0 0 5px var(--neon-color);
-            --btn-hover-bg: var(--neon-color);
-            --btn-hover-color: #000;
-            --btn-hover-shadow: 0 0 20px var(--neon-color);
-            --table-bg: rgba(0,0,0,0.5);
-            --table-border: #ddd;
+            --background-color: #f8f9fa;
+            --text-color: #212529;
+            --accent-color: #007bff; /* Professional blue for light theme */
+            --form-bg: #ffffff;
+            --form-border: #dee2e6;
+            --form-focus-bg: #ffffff;
+            --form-focus-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            --btn-text-shadow: none;
+            --btn-hover-bg: var(--accent-color);
+            --btn-hover-color: #fff;
+            --btn-hover-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            --table-bg: #ffffff;
+            --table-border: #dee2e6;
         }
 
-        body.light-theme {
-            --background-color: #f0f2f5;
-            --text-color: #333;
-            --neon-color: #007bff; /* A blue neon for light theme */
-            --form-bg: rgba(255, 255, 255, 0.8);
-            --form-border: #007bff;
-            --form-focus-bg: rgba(255, 255, 255, 0.9);
-            --form-focus-shadow: 0 0 10px var(--neon-color);
-            --btn-text-shadow: none;
-            --btn-hover-bg: var(--neon-color);
+        body.dark-theme {
+            --background-color: #343a40;
+            --text-color: #e2e6ea;
+            --accent-color: #66b3ff; /* Lighter blue for dark theme */
+            --form-bg: #495057;
+            --form-border: #6c757d;
+            --form-focus-bg: #495057;
+            --form-focus-shadow: 0 0 0 0.25rem rgba(102, 179, 255, 0.25);
+            --btn-hover-bg: var(--accent-color);
             --btn-hover-color: #fff;
-            --btn-hover-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-            --table-bg: rgba(255,255,255,0.9);
-            --table-border: #ccc;
+            --btn-hover-shadow: 0 0 0 0.25rem rgba(102, 179, 255, 0.25);
+            --table-bg: #495057;
+            --table-border: #6c757d;
         }
 
         body {
@@ -69,16 +68,12 @@ $transports_result = mysqli_query($conn, $transports_query);
             background: var(--form-bg);
             padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 20px var(--neon-color),
-                        inset 0 0 20px rgba(0, 255, 255, 0.5); /* Keep a bit of the original neon feel for the form */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
-        .neon-text {
+        .main-text {
             color: var(--text-color);
-            text-shadow: 0 0 5px var(--text-color),
-                         0 0 10px var(--neon-color),
-                         0 0 20px var(--neon-color);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+            transition: color 0.3s ease;
         }
         .form-control, .form-select {
             background: var(--form-bg);
@@ -88,30 +83,27 @@ $transports_result = mysqli_query($conn, $transports_query);
         }
         .form-control:focus, .form-select:focus {
             background: var(--form-focus-bg);
-            border-color: var(--form-border);
+            border-color: var(--accent-color);
             box-shadow: var(--form-focus-shadow);
             color: var(--text-color);
         }
-        .btn-neon {
-            background: transparent;
-            border: 2px solid var(--neon-color);
-            color: var(--text-color);
-            text-shadow: var(--btn-text-shadow);
-            box-shadow: 0 0 10px var(--neon-color);
+        .btn-accent {
+            background: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            color: var(--btn-hover-color);
             transition: all 0.3s ease;
         }
-        .btn-neon:hover {
+        .btn-accent:hover {
             background: var(--btn-hover-bg);
             color: var(--btn-hover-color);
             box-shadow: var(--btn-hover-shadow);
         }
         .nav-link {
-            color: var(--neon-color);
-            text-shadow: 0 0 5px var(--neon-color);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
         .nav-link:hover {
-            color: var(--text-color);
+            color: var(--accent-color);
         }
         .table {
             color: var(--text-color);
@@ -126,7 +118,7 @@ $transports_result = mysqli_query($conn, $transports_query);
 <body class="dark-theme"> <!-- Default to dark theme -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand neon-text" href="#">S S ENTERPRISES</a>
+            <a class="navbar-brand main-text" href="#">S S ENTERPRISES</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
                 <a class="nav-link" href="transport.php">Manage Transport</a>
@@ -138,7 +130,7 @@ $transports_result = mysqli_query($conn, $transports_query);
 
     <div class="container">
         <div class="billing-form">
-            <h2 class="text-center mb-4 neon-text">Generate Bill</h2>
+            <h2 class="text-center mb-4 main-text">Generate Bill</h2>
             <form id="billingForm" action="generate_pdf.php" method="post" target="_blank">
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -219,7 +211,7 @@ $transports_result = mysqli_query($conn, $transports_query);
                     <div class="col-md-3 mb-3">
                         <label>CGST (%)</label>
                         <input type="number" name="cgst_rate" class="form-control" value="0" required>
-                        </div>
+                    </div>
                     <div class="col-md-3 mb-3">
                         <label>SGST (%)</label>
                         <input type="number" name="sgst_rate" class="form-control" value="0" required>
@@ -227,10 +219,6 @@ $transports_result = mysqli_query($conn, $transports_query);
                     <div class="col-md-3 mb-3">
                         <label>IGST (%)</label>
                         <input type="number" name="igst_rate" class="form-control" value="0" required>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label>GST (%)</label>
-                        <input type="number" name="gst_rate" class="form-control" value="0" required>
                     </div>
                 </div>
 
@@ -247,7 +235,7 @@ $transports_result = mysqli_query($conn, $transports_query);
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-neon btn-lg">Generate Bill</button>
+                    <button type="submit" class="btn btn-accent btn-lg">Generate Bill</button>
                 </div>
             </form>
         </div>

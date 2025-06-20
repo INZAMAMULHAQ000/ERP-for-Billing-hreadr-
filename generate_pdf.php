@@ -19,6 +19,16 @@ if (file_exists($qr_code_file)) {
     error_log("QR code image not found at: " . $qr_code_file);
 }
 
+// Read Sun logo image and convert to base64
+$sun_logo_file = __DIR__ . '/Sun.jpeg';
+$sun_logo_data = '';
+if (file_exists($sun_logo_file)) {
+    $sun_logo_type = pathinfo($sun_logo_file, PATHINFO_EXTENSION);
+    $sun_logo_data = 'data:image/' . $sun_logo_type . ';base64,' . base64_encode(file_get_contents($sun_logo_file));
+} else {
+    error_log("Sun logo image not found at: " . $sun_logo_file);
+}
+
 if(!isset($_SESSION['loggedin'])) {
     header("location: index.php");
     exit;
@@ -62,14 +72,18 @@ foreach ($selected_materials_data as $item) {
     $item_subtotal = $item_price_per_unit * $item_quantity;
     $total_price_before_gst += $item_subtotal;
 
+    // Pre-format price and subtotal for display
+    $display_price_per_unit = number_format($item_price_per_unit, 2);
+    $display_item_subtotal = number_format($item_subtotal, 2);
+
     $html_material_rows .= '
             <tr>
                 <td>' . $item_count++ . '</td>
                 <td>' . $item_name . '</td>
                 <td>' . $item_hsn_code . '</td>
                 <td>' . $item_quantity . '</td>
-                <td>₹' . number_format($item_price_per_unit, 2) . '</td>
-                <td>₹' . number_format($item_subtotal, 2) . '</td>
+                <td>₹' . $display_price_per_unit . '</td>
+                <td>₹' . $display_item_subtotal . '</td>
             </tr>';
 }
 
@@ -78,27 +92,46 @@ $price = $total_price_before_gst; // Rename for clarity, this is the total mater
 $cgst_rate = isset($_POST['cgst_rate']) ? floatval($_POST['cgst_rate']) : 0;
 $sgst_rate = isset($_POST['sgst_rate']) ? floatval($_POST['sgst_rate']) : 0;
 $igst_rate = isset($_POST['igst_rate']) ? floatval($_POST['igst_rate']) : 0;
-$gst_rate = isset($_POST['gst_rate']) ? floatval($_POST['gst_rate']) : 0;
 
 $cgst_amount = ($price * $cgst_rate) / 100;
 $sgst_amount = ($price * $sgst_rate) / 100;
 $igst_amount = ($price * $igst_rate) / 100;
-$gst_amount = ($price * $gst_rate) / 100;
-$total = $price + $cgst_amount + $sgst_amount + $igst_amount + $gst_amount;
+$total = $price + $cgst_amount + $sgst_amount + $igst_amount;
+
+// Pre-process GST amounts for display
+$display_cgst_amount = number_format($cgst_amount, 2);
+$display_sgst_amount = number_format($sgst_amount, 2);
+$display_igst_amount = number_format($igst_amount, 2);
 
 // New: Read customer address and phone number
 $customer_name = $_POST['customer_name'];
 $customer_address = $_POST['customer_address'];
 $customer_phone = $_POST['customer_phone'];
 
+// Pre-process customer details for display
+$display_customer_name = htmlspecialchars($customer_name);
+$display_customer_address = nl2br(htmlspecialchars($customer_address));
+$display_customer_phone = htmlspecialchars($customer_phone);
+
+// Pre-process total for display
+$display_total = number_format($total, 2);
+
+// Assign POST values to simpler variables for cleaner HTML embedding
+$invoice_number = $_POST['invoice_number'];
+$invoice_date = $_POST['date'];
+$party_gstin = $_POST['gstin'];
+$mode_of_transport = ($transport ? $transport['name'] : '');
+
 // Initialize Dompdf
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isPhpEnabled', true);
+$options->set('isFontSubsettingEnabled', true);
+$options->set('defaultFont', 'DejaVu Sans');
 $dompdf = new Dompdf($options);
 
 // Generate HTML content
-$html = '
+$html = <<<HTML
 <!DOCTYPE html>
 <html>
 <head>
@@ -106,69 +139,91 @@ $html = '
     <title>Invoice</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'DejaVu Sans', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 20px; /* Restored body padding */
+            font-size: 10pt;
+        }
+        h1 {
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+        h3 {
+            font-size: 14pt;
+            margin-bottom: 5px;
+        }
+        p {
+            margin-bottom: 5px;
         }
         .header {
             text-align: center;
             color: #0066cc;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+        }
+        .company-details,
+        .invoice-details,
+        .customer-details,
+        .gst-details,
+        .total {
+            margin-bottom: 15px;
         }
         .company-details {
-            margin-bottom: 30px;
-            position: relative; /* Added for QR code positioning */
-        }
-        .invoice-details {
-            margin-bottom: 20px;
-        }
-        .customer-details {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            font-size: 9pt;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px;
             text-align: left;
         }
         th {
             background-color: #0066cc;
             color: white;
         }
-        .gst-details {
-            margin-bottom: 30px;
-        }
-        .total {
-            text-align: right;
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
         .terms {
-            margin-top: 50px;
-            font-size: 0.9em;
+            margin-top: 30px;
+            font-size: 8pt;
         }
         .signature {
             text-align: right;
-            margin-top: 50px;
+            margin-top: 30px;
             border-top: 1px solid #000;
             width: 200px;
             float: right;
         }
-        .qr-code {
+        .qr-code,
+        .sun-logo {
             position: absolute;
-            top: 0;
-            right: 0;
-            margin-right: 20px; /* Adjust as needed */
+            width: 80px;
+            height: 80px;
+            z-index: 10; /* Ensure logos are on top */
+        }
+        .qr-code {
+            top: 20px; /* Absolute position from top */
+            right: 20px; /* Absolute position from right */
+            margin: 0; /* Remove old margins */
+        }
+        .sun-logo {
+            top: 20px;
+            left: 20px;
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="sun-logo">
+        <img src="{$sun_logo_data}" alt="Sun Logo" style="width: 70px; height: 80px;">
+    </div>
+    <div class="qr-code">
+        <img src="{$qr_code_data}" alt="QR Code" style="width: 80px; height: 80px;">
+    </div>
+
+    <div class="header" style="margin-top: 20px;">
         <h1>SS ENTERPRISES</h1>
     </div>
 
@@ -178,31 +233,28 @@ $html = '
         Near Sharada School, Bangalore - 560 058<br>
         Mob : 9900868607<br>
         State : Karnataka</p>
-        <div class="qr-code">
-            <img src="' . $qr_code_data . '" alt="QR Code" style="width: 100px; height: 100px;">
-        </div>
     </div>
 
     <div class="invoice-details">
         <table>
             <tr>
-                <td><strong>Invoice No:</strong> '.$_POST['invoice_number'].'</td>
-                <td><strong>Date:</strong> '.$_POST['date'].'</td>
+                <td><strong>Invoice No:</strong> {$invoice_number}</td>
+                <td><strong>Date:</strong> {$invoice_date}</td>
             </tr>
             <tr>
-                <td><strong>PARTY\'S GSTIN:</strong> '.$_POST['gstin'].'</td>
+                <td><strong>PARTY'S GSTIN:</strong> {$party_gstin}</td>
                 <td><strong>State:</strong> Karnataka</td>
             </tr>
             <tr>
-                <td colspan="2"><strong>Mode of Transport:</strong> '.($transport ? $transport['name'] : '').'</td>
+                <td colspan="2"><strong>Mode of Transport:</strong> {$mode_of_transport}</td>
             </tr>
         </table>
     </div>
 
     <div class="customer-details">
-        <strong>Customer Name:</strong> '.htmlspecialchars($customer_name).'<br>
-        <strong>Address:</strong> '.nl2br(htmlspecialchars($customer_address)).'<br>
-        <strong>Phone No:</strong> '.htmlspecialchars($customer_phone).'
+        <strong>Customer Name:</strong> {$display_customer_name}<br>
+        <strong>Address:</strong> {$display_customer_address}<br>
+        <strong>Phone No:</strong> {$display_customer_phone}
     </div>
 
     <table>
@@ -217,21 +269,20 @@ $html = '
             </tr>
         </thead>
         <tbody>
-            ' . $html_material_rows . '
+            {$html_material_rows}
         </tbody>
     </table>
 
     <div class="gst-details">
         <p style="text-align: right;">
-            <strong>CGST ('.$cgst_rate.'%):</strong> ₹'.number_format($cgst_amount, 2).'<br>
-            <strong>SGST ('.$sgst_rate.'%):</strong> ₹'.number_format($sgst_amount, 2).'<br>
-            <strong>IGST ('.$igst_rate.'%):</strong> ₹'.number_format($igst_amount, 2).'<br>
-            <strong>GST ('.$gst_rate.'%):</strong> ₹'.number_format($gst_amount, 2).'
+            <strong>CGST ({$cgst_rate}%):</strong> ₹{$display_cgst_amount}<br>
+            <strong>SGST ({$sgst_rate}%):</strong> ₹{$display_sgst_amount}<br>
+            <strong>IGST ({$igst_rate}%):</strong> ₹{$display_igst_amount}<br>
         </p>
     </div>
 
     <div class="total">
-        <p>Grand Total: ₹'.number_format($total, 2).'</p>
+        <p>Grand Total: ₹{$display_total}</p>
     </div>
 
     <div class="terms" style="float: left; width: 50%;">
@@ -244,10 +295,11 @@ $html = '
     </div>
 
     <div class="signature" style="float: right; width: 45%;">
-        <p>Receiver\'s Signature with Seal</p>
+        <p>Receiver's Signature with Seal</p>
     </div>
 </body>
-</html>';
+</html>
+HTML;
 
 // Load HTML content
 $dompdf->loadHtml($html);
