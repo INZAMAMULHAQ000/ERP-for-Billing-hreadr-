@@ -126,7 +126,7 @@ $transports_result = mysqli_query($conn, $transports_query);
 <body class="dark-theme"> <!-- Default to dark theme -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand neon-text" href="#">Billing System</a>
+            <a class="navbar-brand neon-text" href="#">S S ENTERPRISES</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
                 <a class="nav-link" href="transport.php">Manage Transport</a>

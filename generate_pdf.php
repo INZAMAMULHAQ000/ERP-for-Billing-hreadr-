@@ -151,11 +151,11 @@ $html = '
 </head>
 <body>
     <div class="header">
-        <h1>INVOICE</h1>
+        <h1>SS ENTERPRISES</h1>
     </div>
 
     <div class="company-details">
-        <h3>SS ENTERPRISES</h3>
+        <h3>INVOICE</h3>
         <p>No : 206, Byraveshwara Badavane, Laggere, 1st Main, 4th Cross,<br>
         Near Sharada School, Bangalore - 560 058<br>
         Mob : 9900868607<br>
