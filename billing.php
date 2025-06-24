@@ -246,6 +246,45 @@ $transports_result = mysqli_query($conn, $transports_query);
             color: var(--accent-color) !important;
         }
 
+        .btn-download:hover {
+            background-color: var(--btn-accent-hover-bg);
+            color: var(--btn-accent-hover-text);
+            border-color: var(--btn-accent-hover-border);
+        }
+
+        /* Message Box Styles */
+        .message-box {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message-box.success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green text */
+            border: 1px solid #c3e6cb; /* Green border */
+        }
+
+        .message-box.error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red text */
+            border: 1px solid #f5c6cb; /* Red border */
+        }
+
+        /* Apply theme-specific colors for message boxes */
+        body.dark-theme .message-box.error {
+            background-color: #721c24;
+            color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        body.dark-theme .message-box.success {
+            background-color: #155724;
+            color: #d4edda;
+            border-color: #c3e6cb;
+        }
     </style>
 </head>
 <body class="dark-theme"> <!-- Default to dark theme -->
@@ -255,12 +294,30 @@ $transports_result = mysqli_query($conn, $transports_query);
                 <img src="Sun.jpeg" alt="Company Logo" style="height: 90px; margin-right: 10px; vertical-align: middle;">
                 S S ENTERPRISES
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="materials.php">Manage Materials</a>
-                <a class="nav-link" href="transport.php">Manage Transport</a>
-                <a class="nav-link" href="change_password.php">Change Password</a>
-                <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
-                <a class="nav-link" href="logout.php">Logout</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="billing.php" style="color: var(--main-text-color) !important;">Billing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="materials.php" style="color: var(--main-text-color) !important;">Materials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="transport.php" style="color: var(--main-text-color) !important;">Transport</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="customer_history.php" style="color: var(--main-text-color) !important;">Customer History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="change_password.php" style="color: var(--main-text-color) !important;">Change Password</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php" style="color: var(--main-text-color) !important;">Logout</a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -268,6 +325,13 @@ $transports_result = mysqli_query($conn, $transports_query);
     <div class="container">
         <div class="billing-form">
             <h2 class="text-center mb-4 main-text">Generate Bill</h2>
+
+            <?php if (isset($_GET['status']) && $_GET['status'] == 'error' && isset($_GET['message'])): ?>
+                <div class="message-box error">
+                    <strong>Error:</strong> <?php echo htmlspecialchars($_GET['message']); ?>
+                </div>
+            <?php endif; ?>
+
             <form id="billingForm" action="generate_pdf.php" method="post" target="_blank">
                 <div class="row">
                     <div class="col-md-6 mb-3">

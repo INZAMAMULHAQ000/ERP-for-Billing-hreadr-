@@ -7,6 +7,7 @@ require_once "config/database.php";
 require_once 'vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use mysqli_sql_exception;
 
 // Read QR code image and convert to base64
 $qr_code_file = __DIR__ . '/QR.jpeg';
@@ -287,6 +288,11 @@ $html = <<<HTML
         <p>Grand Total: ₹{$display_total}</p>
     </div>
 
+    <div class="signature" style="float: right; width: 45%;">
+        <p style="margin-bottom: 70px; border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Receiver's Signature with Seal</p>
+        <p style="border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Authorized Signatory</p>
+    </div>
+
     <div class="terms" style="float: left; width: 50%;">
         <h4>Terms &amp; Conditions:</h4>
         <ol>
@@ -294,10 +300,6 @@ $html = <<<HTML
             <li>Our responsibility ceases immediately the goods is delivery or handed over to the carrier.</li>
             <li>Subject to Bangalore Jurisdiction.</li>
         </ol>
-    </div>
-
-    <div class="signature" style="float: right; width: 45%;">
-        <p>Receiver's Signature with Seal</p>
     </div>
 </body>
 </html>
@@ -313,4 +315,36 @@ $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
 
 // Output PDF
-$dompdf->stream('Invoice_'.$_POST['invoice_number'].'.pdf', array('Attachment' => false)); 
+$pdf_filename = 'invoices/Invoice_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $invoice_number) . '.pdf';
+$output_file = __DIR__ . '/' . $pdf_filename;
+
+// Correctly save the PDF to the file system
+file_put_contents($output_file, $dompdf->output());
+
+// Temporarily disable display errors to ensure redirect works without raw output
+ini_set('display_errors', 0);
+error_reporting(0);
+
+// Store invoice details in the database
+$stmt = mysqli_prepare($conn, "INSERT INTO invoices (invoice_number, customer_name, invoice_date, pdf_path) VALUES (?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt, "ssss", $invoice_number, $display_customer_name, $invoice_date_raw, $pdf_filename);
+
+try {
+    if (mysqli_stmt_execute($stmt)) {
+        // Redirect to customer history page on success
+        header("Location: customer_history.php?status=success&invoice=" . urlencode($invoice_number));
+        exit();
+    }
+} catch (mysqli_sql_exception $e) {
+    // Check for duplicate entry error (MySQL error code 1062 for UNIQUE constraint violation)
+    if ($e->getCode() == 1062) {
+        header("Location: billing.php?status=error&message=" . urlencode("Invoice number '{$invoice_number}' already exists. Please use a different one."));
+        exit();
+    } else {
+        error_log("Error inserting invoice into database: " . $e->getMessage());
+        die("Error generating invoice. Please try again.");
+    }
+}
+
+mysqli_stmt_close($stmt);
+mysqli_close($conn);

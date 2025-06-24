@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 19, 2025 at 11:43 PM
+-- Generation Time: Jun 20, 2025 at 11:06 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -40,10 +40,11 @@ CREATE TABLE `materials` (
 --
 
 INSERT INTO `materials` (`id`, `name`, `price`, `hsn_code`, `created_at`) VALUES
-(1, 'Sample Material 1', 100.00, 'A1', '2025-06-19 21:08:38'),
+(1, 'Sample Material', 100.00, 'A7', '2025-06-19 21:08:38'),
 (2, 'Sample Material 2', 150.00, 'B6', '2025-06-19 21:08:38'),
 (3, 'Sample Material 3', 200.00, 'C3', '2025-06-19 21:08:38'),
-(4, 'Material -NN', 600.00, 'u9', '2025-06-19 21:38:31');
+(6, 'Material- 88', 4000.00, 'P8', '2025-06-20 10:34:45'),
+(7, 'Material -NN', 580.00, 'Z3', '2025-06-20 18:51:13');
 
 -- --------------------------------------------------------
 
@@ -62,12 +63,32 @@ CREATE TABLE `transports` (
 --
 
 INSERT INTO `transports` (`id`, `name`, `created_at`) VALUES
-(1, 'Truck', '2025-06-19 20:06:38'),
-(2, 'Van', '2025-06-19 20:06:38'),
-(3, 'Bike', '2025-06-19 20:06:38'),
-(4, 'Truck', '2025-06-19 21:08:38'),
-(5, 'Van', '2025-06-19 21:08:38'),
-(6, 'Bike', '2025-06-19 21:08:38');
+(1, 'F-22', '2025-06-19 20:06:38'),
+(3, 'Swimming', '2025-06-19 20:06:38'),
+(5, 'Globemaster', '2025-06-19 21:08:38'),
+(6, 'Submarine', '2025-06-19 21:08:38'),
+(7, 'Missile', '2025-06-19 22:39:53'),
+(8, 'PSLV', '2025-06-20 10:36:31'),
+(9, 'GSLV', '2025-06-20 18:51:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`) VALUES
+(1, 'admin', '$2y$10$PkKAt2WRdtt.dazf.D85lOWi34PS3m513RR1U157IIxR5rBKoG7yy');
 
 --
 -- Indexes for dumped tables
@@ -87,6 +108,13 @@ ALTER TABLE `transports`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -94,13 +122,19 @@ ALTER TABLE `transports`
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `transports`
 --
 ALTER TABLE `transports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

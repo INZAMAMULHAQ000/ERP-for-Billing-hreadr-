@@ -228,6 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="materials.php">Manage Materials</a>
                 <a class="nav-link" href="transport.php">Manage Transport</a>
+                <a class="nav-link" href="customer_history.php">Customer History</a>
                 <a class="nav-link" href="change_password.php">Change Password</a>
                 <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
                 <a class="nav-link" href="logout.php">Logout</a>
