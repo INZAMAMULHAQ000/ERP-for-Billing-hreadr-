@@ -211,18 +211,22 @@ mysqli_close($conn);
             <div class="mb-3">
                 <label for="old_password" class="form-label">Old Password</label>
                 <input type="password" class="form-control" id="old_password" name="old_password" required>
+                <div id="oldPasswordFeedback" class="invalid-feedback"></div>
             </div>
             <div class="mb-3">
                 <label for="new_password" class="form-label">New Password</label>
                 <input type="password" class="form-control" id="new_password" name="new_password" required>
+                <div id="newPasswordFeedback" class="invalid-feedback"></div>
             </div>
             <div class="mb-3">
                 <label for="confirm_new_password" class="form-label">Confirm New Password</label>
                 <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
+                <div id="confirmPasswordFeedback" class="invalid-feedback"></div>
             </div>
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-accent btn-lg">Change Password</button>
             </div>
+            <p class="text-center mt-3 main-text">Forgot your old password? <a href="forgot_password.php">Reset it here</a>.</p>
         </form>
     </div>
 
@@ -251,11 +255,10 @@ mysqli_close($conn);
                 dynamicLogoContainer.css('pointer-events', 'none');
             }
 
-            $(document).on('mousemove scroll touchstart', function() {
-                showLogo();
-            });
+            // Set up event listeners for user activity
+            $(document).on('mousemove scroll touchstart', showLogo);
 
-            // Initial hide after page load if no immediate interaction
+            // Initial hide after page load
             idleTimeout = setTimeout(hideLogo, idleTime);
 
             // Theme Toggle Logic (copied from billing.php)
@@ -277,6 +280,110 @@ mysqli_close($conn);
                 // Default to dark if no preference saved
                 $('body').addClass('dark-theme');
             }
+
+            // --- Real-time Password Validation ---
+
+            const oldPasswordInput = $('#old_password');
+            const newPasswordInput = $('#new_password');
+            const confirmNewPasswordInput = $('#confirm_new_password');
+            const changePasswordForm = $('form');
+            const submitButton = changePasswordForm.find('button[type="submit"]');
+
+            let isOldPasswordValid = false;
+            let isNewPasswordValid = false;
+            let isConfirmPasswordValid = false;
+
+            function validateForm() {
+                submitButton.prop('disabled', !(isOldPasswordValid && isNewPasswordValid && isConfirmPasswordValid));
+            }
+
+            // Old Password Validation (AJAX)
+            let oldPasswordTimer;
+            oldPasswordInput.on('input', function() {
+                clearTimeout(oldPasswordTimer);
+                const oldPassword = $(this).val();
+                const feedbackElement = $('#oldPasswordFeedback');
+
+                if (oldPassword.length === 0) {
+                    feedbackElement.text('Please enter your old password.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                    isOldPasswordValid = false;
+                    validateForm();
+                    return;
+                }
+
+                oldPasswordTimer = setTimeout(function() {
+                    $.ajax({
+                        url: 'verify_old_password.php',
+                        type: 'POST',
+                        data: { old_password: oldPassword },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.valid) {
+                                feedbackElement.text('Old password is correct.').removeClass('invalid-feedback').addClass('valid-feedback d-block');
+                                oldPasswordInput.removeClass('is-invalid').addClass('is-valid');
+                                isOldPasswordValid = true;
+                            } else {
+                                feedbackElement.text('Incorrect old password.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                                oldPasswordInput.removeClass('is-valid').addClass('is-invalid');
+                                isOldPasswordValid = false;
+                            }
+                            validateForm();
+                        },
+                        error: function() {
+                            feedbackElement.text('Error verifying old password.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                            oldPasswordInput.removeClass('is-valid').addClass('is-invalid');
+                            isOldPasswordValid = false;
+                            validateForm();
+                        }
+                    });
+                }, 500); // Debounce for 500ms
+            });
+
+            // New Password Validation
+            newPasswordInput.on('input', function() {
+                const newPassword = $(this).val();
+                const feedbackElement = $('#newPasswordFeedback');
+
+                if (newPassword.length < 6) {
+                    feedbackElement.text('Password must be at least 6 characters long.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                    $(this).removeClass('is-valid').addClass('is-invalid');
+                    isNewPasswordValid = false;
+                } else {
+                    feedbackElement.text('Password is strong enough.').removeClass('invalid-feedback').addClass('valid-feedback d-block');
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    isNewPasswordValid = true;
+                }
+                validateConfirmPassword(); // Re-validate confirm password whenever new password changes
+                validateForm();
+            });
+
+            // Confirm New Password Validation
+            confirmNewPasswordInput.on('input', validateConfirmPassword);
+
+            function validateConfirmPassword() {
+                const newPassword = newPasswordInput.val();
+                const confirmPassword = confirmNewPasswordInput.val();
+                const feedbackElement = $('#confirmPasswordFeedback');
+
+                if (confirmPassword.length === 0) {
+                    feedbackElement.text('Please confirm your new password.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                    confirmNewPasswordInput.removeClass('is-valid').addClass('is-invalid');
+                    isConfirmPasswordValid = false;
+                } else if (newPassword !== confirmPassword) {
+                    feedbackElement.text('Passwords do not match.').removeClass('valid-feedback').addClass('invalid-feedback d-block');
+                    confirmNewPasswordInput.removeClass('is-valid').addClass('is-invalid');
+                    isConfirmPasswordValid = false;
+                } else {
+                    feedbackElement.text('Passwords match.').removeClass('invalid-feedback').addClass('valid-feedback d-block');
+                    confirmNewPasswordInput.removeClass('is-invalid').addClass('is-valid');
+                    isConfirmPasswordValid = true;
+                }
+                validateForm();
+            }
+
+            // Disable submit button on initial load
+            validateForm();
         });
     </script>
 </body>

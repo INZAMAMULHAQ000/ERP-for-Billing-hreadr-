@@ -312,7 +312,7 @@ $transports_result = mysqli_query($conn, $transports_query);
                         <a class="nav-link" href="change_password.php" style="color: var(--main-text-color) !important;">Change Password</a>
                     </li>
                     <li class="nav-item">
-                        <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
+                <button id="themeToggle" class="btn btn-secondary ms-2">Toggle Theme</button>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php" style="color: var(--main-text-color) !important;">Logout</a>
