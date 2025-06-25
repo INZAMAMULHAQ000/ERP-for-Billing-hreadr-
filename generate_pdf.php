@@ -289,8 +289,8 @@ $html = <<<HTML
     </div>
 
     <div class="signature" style="float: right; width: 45%;">
-        <p style="margin-bottom: 70px; border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Receiver's Signature with Seal</p>
-        <p style="border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Authorized Signatory</p>
+        <p style="margin-bottom: 70px; border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Receiver's Signature</p>
+        <p style="border-bottom: 1px solid black; padding-bottom: 5px; width: 200px; text-align: center; margin-left: auto; margin-right: auto;">Authorized Signatory with Seal</p>
     </div>
 
     <div class="terms" style="float: left; width: 50%;">

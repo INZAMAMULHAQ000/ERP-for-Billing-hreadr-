@@ -335,8 +335,8 @@ $transports_result = mysqli_query($conn, $transports_query);
             <form id="billingForm" action="generate_pdf.php" method="post" target="_blank">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label>Invoice Number</label>
-                        <input type="text" name="invoice_number" class="form-control" required>
+                        <label for="invoice_number" class="form-label main-text">Invoice Number:</label>
+                        <input type="text" class="form-control" id="invoice_number" name="invoice_number" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label>Date</label>
@@ -626,6 +626,22 @@ $transports_result = mysqli_query($conn, $transports_query);
             $('input[name="igst_rate"]').on('input', function() {
                 saveGstValue(this, 'igst_rate');
             });
+
+            // Load invoice number from localStorage
+            const invoiceNumberField = document.getElementById('invoice_number');
+            if (invoiceNumberField) {
+                const savedInvoiceNumber = localStorage.getItem('invoice_number');
+                if (savedInvoiceNumber !== null) {
+                    invoiceNumberField.value = savedInvoiceNumber;
+                }
+            }
+
+            // Save invoice number to localStorage on input
+            if (invoiceNumberField) {
+                invoiceNumberField.addEventListener('input', function() {
+                    localStorage.setItem('invoice_number', this.value);
+                });
+            }
         });
     </script>
 </body>

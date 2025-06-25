@@ -385,6 +385,13 @@ mysqli_close($conn);
                             <th>Generated On</th>
                             <th>Action</th>
                         </tr>
+                        <tr id="filter-row">
+                            <th><input type="text" class="form-control form-control-sm column-search" placeholder="Search Invoice No." data-column="0"></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" placeholder="Search Customer" data-column="1"></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" placeholder="Search Date" data-column="2"></th>
+                            <th><input type="text" class="form-control form-control-sm column-search" placeholder="Search Generated On" data-column="3"></th>
+                            <th></th> <!-- Empty for Action column -->
+                        </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($invoices as $invoice): ?>
@@ -455,6 +462,35 @@ mysqli_close($conn);
             // Default to dark if no preference saved
             $('body').addClass('dark-theme');
         }
+
+        // Column Search Functionality
+        $('.column-search').on('keyup', function() {
+            var filters = {};
+            $('.column-search').each(function() {
+                var colIndex = $(this).data('column');
+                var searchTerm = $(this).val().toLowerCase();
+                if (searchTerm) {
+                    filters[colIndex] = searchTerm;
+                }
+            });
+
+            $('#customerHistoryTable tbody tr').each(function() {
+                var row = $(this);
+                var showRow = true;
+
+                for (var colIndex in filters) {
+                    var cellText = row.find('td').eq(colIndex).text().toLowerCase();
+                    if (cellText.indexOf(filters[colIndex]) === -1) {
+                        showRow = false;
+                        break;
+                    }
+                }
+                row.toggle(showRow);
+            });
+        });
+
+        // Add ID to the table for easy selection
+        $('table').attr('id', 'customerHistoryTable');
     </script>
 </body>
 </html> 

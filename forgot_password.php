@@ -47,12 +47,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = 'inzamamofficial2002@gmail.com';
-                    $mail->Password = 'lillyprrfqgrnhha';
+                    $mail->Username = 'ssenterpriseserp@gmail.com';
+                    $mail->Password = 'pqrylezrrjqzuqkw';
                     $mail->SMTPSecure = 'tls';
                     $mail->Port = 587;
 
-                    $mail->setFrom('inzamamofficial2002@gmail.com', 'SS Enterprises');
+                    $mail->setFrom('ssenterpriseserp@gmail.com', 'SS Enterprises');
                     $mail->addAddress($email, $username);
 
                     $mail->isHTML(true);
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $mail->send();
                     $_SESSION['message'] = ['type' => 'success', 'text' => 'An OTP has been sent to ' . htmlspecialchars($email) . '. Please check your inbox.'];
                 } catch (Exception $e) {
-                    $_SESSION['message'] = ['type' => 'error', 'text' => 'Mailer Error: ' . $mail->ErrorInfo];
+                    $_SESSION['message'] = ['type' => 'error', 'text' => 'Mailer Error: ' . $mail->ErrorInfo . ' (Exception: ' . $e->getMessage() . ')'];
                 }
                 
                 header("location: verify_otp.php");
