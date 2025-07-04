@@ -433,6 +433,10 @@ $transports_result = mysqli_query($conn, $transports_query);
                             <?php endwhile; ?>
                         </select>
                     </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="po_number" class="form-label main-text">PO Number:</label>
+                        <input type="text" class="form-control" id="po_number" name="po_number">
+                    </div>
                 </div>
 
                 <div class="text-center mt-4">

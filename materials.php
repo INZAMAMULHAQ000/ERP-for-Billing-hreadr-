@@ -14,30 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $price = floatval($_POST['price']);
         $hsn_code = mysqli_real_escape_string($conn, $_POST['hsn_code']);
-        // Check uniqueness
-        $check = mysqli_query($conn, "SELECT id FROM materials WHERE hsn_code='$hsn_code'");
-        if (mysqli_num_rows($check) > 0) {
-            $response['success'] = false;
-            $response['error'] = 'HSN code must be unique.';
-        } else {
-            $sql = "INSERT INTO materials (name, price, hsn_code) VALUES ('$name', $price, '$hsn_code')";
-            $response['success'] = mysqli_query($conn, $sql);
-            $response['id'] = mysqli_insert_id($conn);
-        }
+        $sql = "INSERT INTO materials (name, price, hsn_code) VALUES ('$name', $price, '$hsn_code')";
+        $response['success'] = mysqli_query($conn, $sql);
+        $response['id'] = mysqli_insert_id($conn);
     } elseif ($_POST['action'] === 'update') {
         $id = intval($_POST['id']);
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $price = floatval($_POST['price']);
         $hsn_code = mysqli_real_escape_string($conn, $_POST['hsn_code']);
-        // Check uniqueness for update
-        $check = mysqli_query($conn, "SELECT id FROM materials WHERE hsn_code='$hsn_code' AND id!=$id");
-        if (mysqli_num_rows($check) > 0) {
-            $response['success'] = false;
-            $response['error'] = 'HSN code must be unique.';
-        } else {
-            $sql = "UPDATE materials SET name='$name', price=$price, hsn_code='$hsn_code' WHERE id=$id";
-            $response['success'] = mysqli_query($conn, $sql);
-        }
+        $sql = "UPDATE materials SET name='$name', price=$price, hsn_code='$hsn_code' WHERE id=$id";
+        $response['success'] = mysqli_query($conn, $sql);
     } elseif ($_POST['action'] === 'delete') {
         $id = intval($_POST['id']);
         $sql = "DELETE FROM materials WHERE id=$id";

@@ -123,6 +123,7 @@ $invoice_date_raw = $_POST['date'];
 // Convert date to Indian standard (DD-MM-YYYY)
 $invoice_date = (new DateTime($invoice_date_raw))->format('d-m-Y');
 $party_gstin = $_POST['gstin'];
+$po_number = isset($_POST['po_number']) ? htmlspecialchars($_POST['po_number']) : '';
 $mode_of_transport = ($transport ? $transport['name'] : '');
 
 // Initialize Dompdf
@@ -235,6 +236,9 @@ $html = <<<HTML
         <p>No : 206, Byraveshwara Badavane, Laggere, 1st Main, 4th Cross,<br>
         Near Sharada School, Bangalore - 560 058<br>
         Mob : 9900868607<br>
+        GST-ID : 29BKTPR4159P1ZU<br>
+        Email : krnathan5374@gmail.com <br>
+        Mob : 9900868607<br>
         State : Karnataka</p>
     </div>
 
@@ -245,8 +249,8 @@ $html = <<<HTML
                 <td><strong>Date:</strong> {$invoice_date}</td>
             </tr>
             <tr>
-                <td><strong>PARTY'S GSTIN:</strong> {$party_gstin}</td>
-                <td><strong>State:</strong> Karnataka</td>
+                <td><strong>PO Number:</strong> {$po_number}</td>
+                <td><strong>Party GSTIN:</strong> {$party_gstin}</td>
             </tr>
             <tr>
                 <td colspan="2"><strong>Mode of Transport:</strong> {$mode_of_transport}</td>

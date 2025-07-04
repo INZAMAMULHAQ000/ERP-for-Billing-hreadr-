@@ -350,6 +350,9 @@ mysqli_close($conn);
                         <a class="nav-link active" aria-current="page" href="customer_history.php" style="color: var(--main-text-color) !important;">Customer History</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="delete_invoices.php" style="color: var(--main-text-color) !important;">Delete All Invoices</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="change_password.php" style="color: var(--main-text-color) !important;">Change Password</a>
                     </li>
                     <li class="nav-item">
@@ -363,8 +366,12 @@ mysqli_close($conn);
         </div>
     </nav>
 
-    <div class="container">
-        <h2>Customer Invoice History</h2>
+    <div id="dynamicLogoContainer">
+        <img src="logo.png" alt="Company Logo">
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4 main-text">Customer Invoice History</h2>
 
         <?php if (isset($_GET['status']) && $_GET['status'] == 'success' && isset($_GET['invoice'])): ?>
             <div class="message-box success">
@@ -411,57 +418,59 @@ mysqli_close($conn);
         <?php endif; ?>
     </div>
 
-    <div id="dynamicLogoContainer">
-        <img src="logo.png" alt="Dynamic Logo" id="dynamicLogo">
-    </div>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="js/script.js"></script>
     <script>
-        // Dynamic Logo JavaScript (copied from billing.php)
-        const dynamicLogoContainer = document.getElementById('dynamicLogoContainer');
-        let activityTimer;
+        $(document).ready(function() {
+            // Theme Toggle Logic
+            $('#themeToggle').on('click', function() {
+                $('body').toggleClass('light-theme dark-theme');
+                // Save preference to localStorage
+                if ($('body').hasClass('light-theme')) {
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
 
-        function showLogo() {
-            dynamicLogoContainer.style.opacity = '1';
-            dynamicLogoContainer.style.pointerEvents = 'auto';
-            clearTimeout(activityTimer);
-            activityTimer = setTimeout(hideLogo, 2000); // Hide after 2 seconds of inactivity
-        }
-
-        function hideLogo() {
-            dynamicLogoContainer.style.opacity = '0.1';
-            dynamicLogoContainer.style.pointerEvents = 'none';
-        }
-
-        document.addEventListener('mousemove', showLogo);
-        document.addEventListener('scroll', showLogo);
-        document.addEventListener('touchstart', showLogo); // For touch devices
-
-        // Initial hide after page load
-        activityTimer = setTimeout(hideLogo, 2000);
-
-        // Theme Toggle Logic
-        $('#themeToggle').on('click', function() {
-            $('body').toggleClass('light-theme dark-theme');
-            // Save preference to localStorage
-            if ($('body').hasClass('light-theme')) {
-                localStorage.setItem('theme', 'light');
+            // Load theme preference on page load
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                $('body').removeClass('light-theme dark-theme').addClass(savedTheme + '-theme');
             } else {
-                localStorage.setItem('theme', 'dark');
+                // Default to dark if no preference saved
+                $('body').addClass('dark-theme');
             }
-        });
 
-        // Load theme preference on page load
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            $('body').removeClass('light-theme dark-theme').addClass(savedTheme + '-theme');
-        } else {
-            // Default to dark if no preference saved
-            $('body').addClass('dark-theme');
-        }
+            // Dynamic Logo Logic
+            let idleTimeout;
+            const dynamicLogoContainer = $('#dynamicLogoContainer');
+            const idleTime = 2000; // 2 seconds of inactivity before hiding
+
+            function showLogo() {
+                dynamicLogoContainer.css('opacity', '1');
+                dynamicLogoContainer.css('pointer-events', 'auto');
+                clearTimeout(idleTimeout);
+                idleTimeout = setTimeout(hideLogo, idleTime);
+            }
+
+            function hideLogo() {
+                dynamicLogoContainer.css('opacity', '0');
+                dynamicLogoContainer.css('pointer-events', 'none');
+            }
+
+            // Show logo on initial load (optional, or wait for first interaction)
+            // showLogo(); 
+
+            $(document).on('mousemove scroll touchstart', function() {
+                showLogo();
+            });
+
+            // Initial hide after page load if no immediate interaction
+            idleTimeout = setTimeout(hideLogo, idleTime);
+        });
 
         // Column Search Functionality
         $('.column-search').on('keyup', function() {
