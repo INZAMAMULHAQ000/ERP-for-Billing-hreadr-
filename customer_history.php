@@ -408,7 +408,7 @@ mysqli_close($conn);
                                 <td><?php echo htmlspecialchars((new DateTime($invoice['invoice_date']))->format('d-m-Y')); ?></td>
                                 <td><?php echo htmlspecialchars((new DateTime($invoice['created_at']))->format('d-m-Y H:i:s')); ?></td>
                                 <td>
-                                    <a href="<?php echo htmlspecialchars($invoice['pdf_path']); ?>" class="btn btn-download btn-sm" download>Download PDF</a>
+                                    <a href="download_invoice.php?file=<?php echo urlencode(basename($invoice['pdf_path'])); ?>" class="btn btn-download btn-sm">Download PDF</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

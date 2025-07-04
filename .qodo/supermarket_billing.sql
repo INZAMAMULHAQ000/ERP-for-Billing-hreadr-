@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 03, 2025 at 12:29 PM
+-- Generation Time: Jul 04, 2025 at 02:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -67,29 +67,6 @@ CREATE TABLE `invoices` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `invoices`
---
-
-INSERT INTO `invoices` (`id`, `invoice_number`, `customer_name`, `invoice_date`, `pdf_path`, `created_at`) VALUES
-(1, '8777565', 'Wally', '2025-06-24', 'invoices/Invoice_8777565.pdf', '2025-06-24 07:29:31'),
-(3, '5225645', 'Pruno Dass', '2025-06-24', 'invoices/Invoice_5225645.pdf', '2025-06-24 08:54:08'),
-(4, '89987', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89987.pdf', '2025-06-24 08:57:02'),
-(6, '89980', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89980.pdf', '2025-06-24 09:13:20'),
-(7, '89981', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89981.pdf', '2025-06-24 09:14:24'),
-(8, '89982', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89982.pdf', '2025-06-24 09:15:02'),
-(9, '89984', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89984.pdf', '2025-06-24 09:15:58'),
-(10, '89985', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89985.pdf', '2025-06-24 09:16:21'),
-(11, '8989', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_8989.pdf', '2025-06-24 09:19:56'),
-(12, '89890', 'Noor Salim Ahmed', '2025-06-24', 'invoices/Invoice_89890.pdf', '2025-06-24 09:23:32'),
-(16, '899855', 'Sahul Hameed', '2025-06-24', 'invoices/Invoice_899855.pdf', '2025-06-24 09:45:06'),
-(17, '77778', 'Bullet', '2025-06-24', 'invoices/Invoice_77778.pdf', '2025-06-24 14:03:26'),
-(18, '4456', 'Kiran Raj', '2025-06-24', 'invoices/Invoice_4456.pdf', '2025-06-24 14:13:11'),
-(20, '883520', 'p', '2025-06-24', 'invoices/Invoice_883520.pdf', '2025-06-24 15:34:23'),
-(21, '899800', 'Pruno Dass', '2025-06-24', 'invoices/Invoice_899800.pdf', '2025-06-24 16:24:19'),
-(23, '9910', 'iio', '2025-06-24', 'invoices/Invoice_9910.pdf', '2025-06-24 17:08:04'),
-(26, '899801', 'First Name Last Name', '2025-07-03', 'invoices/Invoice_899801.pdf', '2025-07-03 09:03:45');
-
 -- --------------------------------------------------------
 
 --
@@ -116,8 +93,10 @@ INSERT INTO `materials` (`id`, `name`, `price`, `hsn_code`, `created_at`) VALUES
 (7, 'Material -NN', 580.00, 'Z3', '2025-06-20 18:51:13'),
 (8, 'Sample material -YY', 8400.00, 'L9', '2025-06-24 09:31:33'),
 (9, 'Kiran\'s Material -1', 5100.00, 'K7', '2025-06-24 14:17:00'),
-(10, 'Kiran', 6000.00, 'K5', '2025-06-24 14:17:57'),
-(11, 'PipeBomber-66', 9110.00, 'J8', '2025-06-24 16:25:59');
+(11, 'PipeBomber-66', 9110.00, 'J8', '2025-06-24 16:25:59'),
+(20, 'Material -NN', 5555.00, 'K9', '2025-07-04 09:51:47'),
+(21, 'Material- 88 55', 4100.00, 'K7', '2025-07-04 10:21:49'),
+(22, 'Material -NN', 544.00, 'K7', '2025-07-04 11:05:45');
 
 -- --------------------------------------------------------
 
@@ -136,14 +115,14 @@ CREATE TABLE `transports` (
 --
 
 INSERT INTO `transports` (`id`, `name`, `created_at`) VALUES
-(1, 'F-22', '2025-06-19 20:06:38'),
 (5, 'Globemaster', '2025-06-19 21:08:38'),
 (6, 'Submarine', '2025-06-19 21:08:38'),
 (7, 'Missile', '2025-06-19 22:39:53'),
 (8, 'PSLV', '2025-06-20 10:36:31'),
 (9, 'GSLV', '2025-06-20 18:51:39'),
 (10, 'J-7', '2025-06-24 09:31:49'),
-(12, 'Helicopter', '2025-06-24 16:26:24');
+(12, 'Helicopter', '2025-06-24 16:26:24'),
+(13, 'J-76', '2025-07-04 11:05:18');
 
 -- --------------------------------------------------------
 
@@ -163,7 +142,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
-(1, 'admin', 'ssenterpriseserp@gmail.com', '$2y$10$BVTwT73yjb37coYoI33rB.njueLneVXQrRWZ9P/8U0tyjzeLbV4eO');
+(1, 'admin', 'ssenterpriseserp@gmail.com', '$2y$10$7PNctN4AKhJeakVtiz9XYOFU5jB85lNrQLfWfSI.oMaYvJkTVWK.6');
 
 --
 -- Indexes for dumped tables
@@ -186,8 +165,7 @@ ALTER TABLE `invoices`
 -- Indexes for table `materials`
 --
 ALTER TABLE `materials`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `hsn_code` (`hsn_code`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `transports`
@@ -217,19 +195,19 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT for table `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `materials`
 --
 ALTER TABLE `materials`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `transports`
 --
 ALTER TABLE `transports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
