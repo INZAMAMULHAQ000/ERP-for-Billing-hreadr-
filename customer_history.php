@@ -409,6 +409,10 @@ mysqli_close($conn);
                                 <td><?php echo htmlspecialchars((new DateTime($invoice['created_at']))->format('d-m-Y H:i:s')); ?></td>
                                 <td>
                                     <a href="download_invoice.php?file=<?php echo urlencode(basename($invoice['pdf_path'])); ?>" class="btn btn-download btn-sm">Download PDF</a>
+                                    <form action="delete_invoice.php" method="post" style="display:inline;">
+                                        <input type="hidden" name="invoice_number" value="<?php echo htmlspecialchars($invoice['invoice_number']); ?>">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-delete-invoice" onclick="return confirm('Are you sure you want to delete this invoice?');">Delete</button>
+                                    </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
