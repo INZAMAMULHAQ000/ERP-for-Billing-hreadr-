@@ -1,8 +1,8 @@
 <?php
 define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '');
-define('DB_NAME', 'supermarket_billing');
+define('DB_USERNAME', 'u443790490_Billing');
+define('DB_PASSWORD', 'AndroCoder2020');
+define('DB_NAME', 'u443790490_Billing');
 
 // Attempt to connect to MySQL database
 $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
